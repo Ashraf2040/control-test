@@ -7,22 +7,27 @@ export async function POST(request: Request) {
     const data = await request.json();
     console.log('Received data:', data);
 
-    const { name, email, password, subjectClassAssignments } = data;
+    const { name, email, password, academicYear, subjectClassAssignments } = data;
 
     if (!Array.isArray(subjectClassAssignments)) {
       return NextResponse.json({ error: 'subjectClassAssignments must be an array' }, { status: 400 });
     }
 
+    // Create the teacher
     const newTeacher = await prisma.teacher.create({
       data: {
         name,
         email,
         password,
+        academicYear,
       },
     });
 
+    const trimesters = ['First Trimester', 'Second Trimester', 'Third Trimester'];
+
+    // Iterate over subject-class pairs
     for (const { subjectId, classId } of subjectClassAssignments) {
-      // Upsert SubjectTeacher entry
+      // Upsert SubjectTeacher
       await prisma.subjectTeacher.upsert({
         where: {
           subjectId_teacherId: { subjectId, teacherId: newTeacher.id },
@@ -34,23 +39,20 @@ export async function POST(request: Request) {
         },
       });
 
-      // Upsert ClassTeacher entry
+      // Upsert ClassTeacher
       const classTeacherEntry = await prisma.classTeacher.upsert({
         where: {
-          classId_teacherId: {
-            classId: classId,
-            teacherId: newTeacher.id,
-          },
+          classId_teacherId: { classId, teacherId: newTeacher.id },
         },
         update: {},
         create: {
           id: randomUUID(),
+          classId,
           teacherId: newTeacher.id,
-          classId: classId,
         },
       });
 
-      // **New Step**: Upsert ClassSubject entry
+      // Upsert ClassSubject
       await prisma.classSubject.upsert({
         where: {
           classId_subjectId: { classId, subjectId },
@@ -63,26 +65,34 @@ export async function POST(request: Request) {
         },
       });
 
-      // Fetch students and create marks
+      // Fetch all students in the class
       const students = await prisma.student.findMany({
-        where: { classId: classTeacherEntry.classId },
+        where: { classId },
       });
 
-      const markEntries = students.map((student) => ({
-        studentId: student.id,
-        classTeacherId: classTeacherEntry.id,
-        subjectId,
-        participation: 0,
-        behavior: 0,
-        workingQuiz: 0,
-        project: 0,
-        finalExam: 0,
-      }));
+      // Generate marks for each student in each trimester
+      for (const student of students) {
+        const markEntries = trimesters.map((trimester) => ({
+          id: randomUUID(),
+          studentId: student.id,
+          classTeacherId: classTeacherEntry.id,
+          subjectId,
+          academicYear,
+          trimester,
+          participation: 0,
+          behavior: 0,
+          workingQuiz: 0,
+          project: 0,
+          finalExam: 0,
+        }));
 
-      await prisma.mark.createMany({ data: markEntries });
+        await prisma.mark.createMany({
+          data: markEntries,
+        });
+      }
     }
 
-    return NextResponse.json({ message: 'Teacher created successfully' });
+    return NextResponse.json({ message: 'Teacher and marks created successfully' });
   } catch (error) {
     console.error('Error creating teacher:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -5,17 +5,20 @@ import { useRouter } from 'next/navigation';
 
 const TeacherCreation = () => {
   const router = useRouter();
-  
+
   const [teacherData, setTeacherData] = useState({
     name: '',
     email: '',
     password: '123456789',
+    academicYear: '',  // Changed to use select box
     subjectClassAssignments: [] as { subjectId: string; classId: string }[],  // New structure to hold subject-class pairs
   });
-  
+
   const [subjects, setSubjects] = useState([]);
   const [classes, setClasses] = useState([]);
+  const [academicYears, setAcademicYears] = useState<string[]>([]);  // Will store the generated academic year ranges
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);  // Track selected subject for assignment
+  const [selectedClass, setSelectedClass] = useState<string | null>(null); // Track selected class for assignment
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -40,24 +43,41 @@ const TeacherCreation = () => {
 
     fetchSubjects();
     fetchClasses();
+
+    // Generate academic years dynamically
+    const generateAcademicYears = (startYear: number, numYears: number) => {
+      let years = [];
+      for (let i = 0; i < numYears; i++) {
+        const yearStart = startYear + i;
+        const yearEnd = startYear + i + 1;
+        years.push(`${yearStart}-${yearEnd}`);
+      }
+      return years;
+    };
+
+    // Example: Generate 10 years starting from 2024
+    const years = generateAcademicYears(2024, 10); 
+    setAcademicYears(years);
+
   }, []);
 
   // Update teacherData with selected subject-class pair
-  const handleAddSubjectClassPair = (classId: string) => {
-    if (selectedSubject) {
+  const handleAddSubjectClassPair = () => {
+    if (selectedSubject && selectedClass) {
       setTeacherData((prevData) => ({
         ...prevData,
         subjectClassAssignments: [
           ...prevData.subjectClassAssignments,
-          { subjectId: selectedSubject, classId },
+          { subjectId: selectedSubject, classId: selectedClass },
         ],
       }));
       setSelectedSubject(null);  // Reset selected subject after assignment
+      setSelectedClass(null); // Reset selected class after assignment
     }
   };
 
   // Handle other input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setTeacherData((prev) => ({ ...prev, [name]: value }));
   };
@@ -80,17 +100,16 @@ const TeacherCreation = () => {
     }
   };
 
-  const returnToHome=()=>{
-    router.push('/admin')
-  }
+  const returnToHome = () => {
+    router.push('/admin');
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10 relative">
-
-<button className='absolute flex items-center justify-center right-1 top-1 text-white font-bold bg-main  px-2 rounded text-lg' onClick={returnToHome} >x</button>
+      <button className="absolute flex items-center justify-center right-1 top-1 text-white font-bold bg-main px-2 rounded text-lg" onClick={returnToHome}>x</button>
       <h1 className="text-2xl font-semibold text-center mb-6">Create New Teacher</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        
+
         {/* Basic Info */}
         <div>
           <label className="block text-lg font-medium text-gray-700">Name:</label>
@@ -115,6 +134,25 @@ const TeacherCreation = () => {
           />
         </div>
 
+        {/* Academic Year Select */}
+        <div>
+          <label className="block text-lg font-medium text-gray-700">Academic Year:</label>
+          <select
+            name="academicYear"
+            value={teacherData.academicYear}
+            onChange={handleChange}
+            required
+            className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" disabled>Select an academic year</option>
+            {academicYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Select Subject and Assign Class */}
         <div>
           <label className="block text-lg font-medium text-gray-700">Subjects:</label>
@@ -130,7 +168,6 @@ const TeacherCreation = () => {
               </option>
             ))}
           </select>
-          <p className="text-sm text-gray-500">Select a subject, then assign it to a class below.</p>
         </div>
 
         {/* Select Class for the Selected Subject */}
@@ -138,7 +175,8 @@ const TeacherCreation = () => {
           <div>
             <label className="block text-lg font-medium text-gray-700">Assign Class for Selected Subject:</label>
             <select
-              onChange={(e) => handleAddSubjectClassPair(e.target.value)}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              value={selectedClass || ""}
               className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="" disabled>Select a class</option>
@@ -148,6 +186,13 @@ const TeacherCreation = () => {
                 </option>
               ))}
             </select>
+            <button
+              type="button"
+              onClick={handleAddSubjectClassPair}
+              className="mt-2 p-3 bg-blue-500 text-white rounded-md"
+            >
+              Add Subject-Class Pair
+            </button>
           </div>
         )}
 

@@ -1,5 +1,3 @@
-// app/api/students/route.ts
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -8,34 +6,36 @@ export async function GET(request: Request) {
   const classId = searchParams.get('classId');
   const teacherId = searchParams.get('teacherId');
   const role = searchParams.get('role');
-  const subjectId = searchParams.get('subjectId');
-   // new parameter to identify admin vs. teacher request
+  const subjectId = searchParams.get('subjectId') || undefined; // Default to "2" if not provided
+  const academicYear = searchParams.get('academicYear') || undefined;
+  const trimester = searchParams.get('trimester') || undefined;
 
   if (!classId || !teacherId) {
     return new Response('Missing classId or teacherId', { status: 400 });
   }
 
   try {
+    console.log(trimester,academicYear,subjectId,teacherId,classId)
     const studentsWithMarks = await prisma.student.findMany({
       where: {
         classId,
         marks: {
           some: {
+            subjectId,
+            academicYear,
+            trimester,
             classTeacher: {
-              teacherId: role === 'admin' ? undefined : teacherId, // filter based on teacherId only if not admin
+              teacherId: role === 'admin' ? undefined : teacherId,
             },
-       
           },
         },
       },
       include: {
         marks: {
           where: {
-            classTeacher: {
-              teacherId: role === 'admin' ? undefined : teacherId,
-               // include marks by teacher for teacher requests
-            },
-           
+            subjectId,
+            academicYear,
+            trimester,
           },
         },
       },

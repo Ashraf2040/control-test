@@ -45,7 +45,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // Update the marks
     const updatedMarks = await prisma.mark.update({
-      where: { id: markId }, // Use the ID of the found marks
+      where: { id: markId },
       data: {
         participation: updatedData.participation,
         behavior: updatedData.behavior,
@@ -58,9 +58,12 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           (updatedData.workingQuiz || 0) +
           (updatedData.project || 0) +
           (updatedData.finalExam || 0)
-        ), // Calculate total marks
+        ),
+        academicYear: updatedData.academicYear, // Add this
+        trimester: updatedData.trimester,       // Add this
       },
     });
+    
 
     return NextResponse.json(updatedMarks, { status: 200 });
   } catch (error) {

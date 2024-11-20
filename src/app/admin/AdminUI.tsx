@@ -40,6 +40,9 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   const [marks, setMarks] = useState<{ [studentId: string]: Partial<LocalStudent> }>({});
   const [showTeacherProgress, setShowTeacherProgress] = useState(false);
   const [teacherProgress, setTeacherProgress] = useState<any[]>([]);
+  const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
+const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
+
   const router = useRouter();
 
   const fetchTeachersBySubject = async (subjectId: string) => {
@@ -72,16 +75,16 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   console.log(classes)
   useEffect(() => {
     const fetchStudents = async () => {
-      if (!selectedClassId || !selectedTeacherId || !selectedSubjectId) return;
-
+      if (!selectedClassId || !selectedTeacherId || !selectedSubjectId || !selectedAcademicYear || !selectedTrimester) return;
+    
       try {
         const response = await fetch(
-          `/api/students?classId=${selectedClassId}&teacherId=${selectedTeacherId}&role=admin&subjectId=${selectedSubjectId}`
+          `/api/students?classId=${selectedClassId}&teacherId=${selectedTeacherId}&subjectId=${selectedSubjectId}&academicYear=${selectedAcademicYear}&trimester=${selectedTrimester}`
         );
         if (!response.ok) throw new Error('Failed to fetch students');
-
+    
         const data = await response.json();
-
+    
         const mappedStudents = data.map((student: any) => ({
           ...student,
           behavior: student.marks?.behavior || 0,
@@ -90,13 +93,13 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
           project: student.marks?.project || 0,
           finalExam: student.marks?.finalExam || 0,
         }));
-
+    
         setStudents(mappedStudents);
-        console.log(mappedStudents);
       } catch (error) {
         console.error(error);
       }
     };
+    
 
     fetchStudents();
   }, [selectedClassId, selectedTeacherId, selectedSubjectId]);
@@ -278,29 +281,68 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
     )}
       </div>
 
-      <div className="mb-6 print:hidden">
-        <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Subject</h2>
-        <select
-          className="border rounded p-3 w-full focus:outline-none focus:ring-2 hover:bg-gray-100 focus:ring-blue-400"
-          onChange={handleSubjectChange}
-          defaultValue=""
-        >
-          <option value="" disabled>
-            Select a subject
-          </option>
-          {subjects.map((subject) => (
-            <option key={subject.id} value={subject.id} >
-              {subject.name}
-            </option>
-          ))}
-        </select>
+      <div className="my-6 mx-auto  print:hidden flex w-fit gap-2 md:gap-12 lg: flex-wrap justify-center items-center  ">
+      <div className='flex w-full md:w-fit  gap-2 items-center justify-center'>
+      {/* <h2 className="text-xl font-semibold ">Select Academic Year</h2> */}
+  <select
+    className="border w-full rounded p-3  focus:outline-none focus:ring-2 focus:ring-blue-400"
+    onChange={(e) => setSelectedAcademicYear(e.target.value)}
+    defaultValue=""
+  >
+    <option value="" disabled>
+      Select an academic year
+    </option>
+    <option value="2024-2025">2024-2025</option>
+    <option value="2025-2026">2025-2026</option>
+    <option value="2026-2027">2026-2027</option>
+  </select>
       </div>
 
-      {selectedSubjectId && teachers.length > 0 && (
-        <div className="mb-6 print:hidden">
-          <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Teacher</h2>
+
+
+
+      
+  {selectedAcademicYear && (
+  <div className="print:hidden flex w-full  md:w-fit ">
+    {/* <h2 className="text-xl font-semibold ">Select Trimester</h2> */}
+    <select
+      className="border rounded p-3 w-full  focus:outline-none focus:ring-2 focus:ring-blue-400"
+      onChange={(e) => setSelectedTrimester(e.target.value)}
+      defaultValue=""
+    >
+      <option value="" disabled>
+        Select a trimester
+      </option>
+      <option value="First Trimester">First Trimester</option>
+      <option value="Second Trimester">Second Trimester</option>
+      <option value="Third Trimester">Third Trimester</option>
+    </select>
+  </div>
+)}
+        {selectedAcademicYear && selectedTrimester && (
+          <div className='print:hidden w-full md:w-fit bg-red-200  '>
+          {/* <h2 className="text-xl font-semibold  print:hidden">Select a Subject</h2> */}
           <select
-            className="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded p-3 w-full   focus:outline-none focus:ring-2 hover:bg-gray-100 "
+            onChange={handleSubjectChange}
+            defaultValue=""
+          >
+            <option value="" disabled>
+              Select a subject
+            </option>
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id} >
+                {subject.name}
+              </option>
+            ))}
+          </select>
+          </div>
+        )}
+        {selectedSubjectId && teachers.length > 0 && (
+        <div className=" print:hidden flex w-full md:w-fit">
+          {/* <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Teacher</h2> */}
+          <select
+            className="border rounded  p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
             onChange={handleTeacherChange}
             defaultValue=""
           >
@@ -317,10 +359,10 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
       )}
 
       {selectedTeacherId && classes.length > 0 && (
-        <div className="mb-6 print:hidden">
-          <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Class</h2>
+        <div className=" print:hidden w-full md:w-fit">
+          {/* <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Class</h2> */}
           <select
-            className="border rounded p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded  p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
             onChange={handleClassChange}
             defaultValue=""
           >
@@ -336,6 +378,9 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
         </div>
       )}
 
+      </div>
+
+   
 {students.length > 0 && (
         <div id="certificate" className="p-2 border border-gray-300 rounded-lg overflow-scroll">
           

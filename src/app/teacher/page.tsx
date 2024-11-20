@@ -21,6 +21,8 @@ interface StudentWithMarks extends Student {
 
 const TeacherPage: React.FC = () => {
   const { user } = useUser();
+  const [academicYear, setAcademicYear] = useState<string>('');
+  const [trimester, setTrimester] = useState<string>('');
   const [classes, setClasses] = useState<Class[]>([]);
   const [students, setStudents] = useState<StudentWithMarks[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
@@ -37,7 +39,9 @@ const TeacherPage: React.FC = () => {
     finalExam: 35,
   };
 
-  // Fetch teacher details and subjects
+  const academicYears = ['2023-2024', '2024-2025', '2025-2026'];
+  const trimesters = ['First Trimester', 'Second Trimester', 'Third Trimester'];
+
   useEffect(() => {
     const fetchTeacherDetails = async () => {
       if (!user) return;
@@ -46,9 +50,7 @@ const TeacherPage: React.FC = () => {
         if (!response.ok) throw new Error('Failed to fetch teacher details');
         const teacherData = await response.json();
         setTeacherDetails(teacherData);
-        console.log(teacherData)
 
-        // Automatically set the subject if the teacher has only one
         if (teacherData.subjects.length === 1) {
           setSelectedSubject(teacherData.subjects[0].subjectId);
         }
@@ -61,24 +63,41 @@ const TeacherPage: React.FC = () => {
     fetchTeacherDetails();
   }, [user]);
 
-  // Filter classes whenever selectedSubject changes
-  const filteredClasses = fetchedClasses.filter((classItem) =>
+  const filteredClasses = fetchedClasses?.filter((classItem) =>
     classItem.class.subjects.some((subject) => subject.subjectId === selectedSubject)
   );
+console.log(trimester)
+  const fetchClasses = async (teacherId: string) => {
+    try {
+      const response = await fetch(`/api/classes?teacherId=${teacherId}`);
+      const data = await response.json();
+      setFetchedClasses(data);
+    } catch (error) {
+      console.error('Error fetching classes:', error);
+      toast.error('Error fetching classes.');
+    }
+  };
 
-  const currentTeacher = teacherDetails;
+  useEffect(() => {
+    if (user?.id) {
+      fetchClasses(user.id);
+    }
+  }, [user?.id]);
 
-  // Fetch students based on the selected class, subject, and logged-in teacher
   useEffect(() => {
     const fetchStudents = async () => {
-      if (!selectedClassId || !selectedSubject) return;
-
+      if (!selectedClassId || !selectedSubject || !academicYear || !trimester || !user?.id) return;
+    
       try {
-        const response = await fetch(`/api/students?classId=${selectedClassId}&subject=${selectedSubject}&teacherId=${user?.id}`);
+        const response = await fetch(
+          `/api/students?classId=${selectedClassId}&subjectId=${selectedSubject}&academicYear=${academicYear}&trimester=${trimester}&teacherId=${user.id}`
+        );
+    
         if (!response.ok) throw new Error('Failed to fetch students');
+    
         const data: StudentWithMarks[] = await response.json();
         setStudents(data);
-
+    
         const initialMarks: Record<string, Mark> = {};
         data.forEach((student) => {
           const studentMark = student.marks[0] || {};
@@ -97,14 +116,15 @@ const TeacherPage: React.FC = () => {
         toast.error('Error fetching students.');
       }
     };
-
+    
     fetchStudents();
-  }, [selectedClassId, selectedSubject]);
+  }, [selectedClassId, selectedSubject, academicYear, trimester, user?.id]); // Add user?.id as a dependency
+  
 
   const handleClassChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedClassId(event.target.value);
   };
-
+  const currentTeacher = teacherDetails;
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSubject(event.target.value);
   };
@@ -146,6 +166,8 @@ const TeacherPage: React.FC = () => {
               workingQuiz: studentMarks.workingQuiz,
               project: studentMarks.project,
               finalExam: studentMarks.finalExam,
+              academicYear,
+              trimester,
             }),
           });
         })
@@ -161,7 +183,7 @@ const TeacherPage: React.FC = () => {
       toast.error('Error updating marks. Please try again.');
     }
   };
-
+   console.log(currentTeacher)
   const fillAllMarks = (field: keyof Mark) => {
     const maxValue = maxValues[field];
     setMarks((prevMarks) => {
@@ -188,30 +210,53 @@ const TeacherPage: React.FC = () => {
       return updatedMarks;
     });
   };
-
-  async function fetchClasses(teacherId: string) {
-    const response = await fetch(`/api/classes?teacherId=${teacherId}`);
-    const data = await response.json();
-    setFetchedClasses(data); 
-    return data;
-  }
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchClasses(user?.id);
-    }
-  }, [user?.id]);
-
+console.log(students)
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
       <Toaster position="top-right" />
-     <div className='flex items-center justify-between md:pr-12'> 
-      <h1 className="md:text-xl font-bold text-white bg-main p-3 rounded-md mb-6 max-w-fit text-center">
-        Hello, {currentTeacher?.name}
-      </h1>
-      <h1 className="md:text-2xl font-extrabold text-main    mb-6 max-w-fit text-center">
-     Subject :   <span className='text-[#e16262]'> {currentTeacher?.subjects[0]?.subject.name}</span>
-      </h1></div>
+      <h1 className="text-xl font-bold">Hello, {teacherDetails?.name}</h1>
+      <div className="mb-4">
+        <label htmlFor="academicYear" className="block text-lg">Select Academic Year:</label>
+        <select
+          id="academicYear"
+          value={academicYear}
+          onChange={(e) => setAcademicYear(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">-- Select Academic Year --</option>
+          {academicYears.map((year) => (
+            <option key={year} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="trimester" className="block text-lg">Select Trimester:</label>
+        <select
+          id="trimester"
+          value={trimester}
+          onChange={(e) => setTrimester(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="">-- Select Trimester --</option>
+          {trimesters.map((trimesterOption) => (
+            <option key={trimesterOption} value={trimesterOption}>
+              {trimesterOption}
+            </option>
+          ))}
+        </select>
+      </div>
+
+
+
+
+
+
+
+
+
 
       {currentTeacher?.subjects.length > 1 && (
         <div className="mb-6">

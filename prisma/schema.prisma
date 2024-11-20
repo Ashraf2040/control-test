@@ -12,7 +12,9 @@ model Teacher {
   email    String           @unique
   password String
   name     String
-  role     Role             @default(TEACHER) // Add role to identify if the teacher has a specific role
+  role     Role             @default(TEACHER)
+  academicYear    String
+   // Add role to identify if the teacher has a specific role
   subjects SubjectTeacher[] // Link to SubjectTeacher join table for subjects
   classes  ClassTeacher[]   // Link to ClassTeacher join table for classes
 }
@@ -82,32 +84,35 @@ model SubjectTeacher {
 }
 
 model Mark {
-  id            String @id @default(uuid())
-  participation Int?
-  behavior      Int?
-  workingQuiz   Int?
-  project       Int?
-  finalExam     Int?
-  totalMarks    Int?
+  id             String      @id @default(uuid())
+  participation  Int?
+  behavior       Int?
+  workingQuiz    Int?
+  project        Int?
+  finalExam      Int?
+  totalMarks     Int?
 
-  // Conditional fields for different subject types
-  homework      Int?    // Only for Arabic or Social Arabic
-  classActivities Int?  // Only for Arabic or Social Arabic
-  memorizing    Int?    // Only for Islamic subject
-  reading       Int?    // Only for Islamic subject
-  oralTest      Int?    // Only for Islamic subject
+  homework       Int?        // Only for Arabic or Social Arabic
+  classActivities Int?       // Only for Arabic or Social Arabic
+  memorizing     Int?        // Only for Islamic subject
+  reading        Int?        // Only for Islamic subject
+  oralTest       Int?        // Only for Islamic subject
 
-  studentId     String
-  student       Student @relation(fields: [studentId], references: [id])
+  studentId      String
+  student        Student     @relation(fields: [studentId], references: [id])
 
-  classTeacherId String // Reference to specific teacher-class assignment
+  classTeacherId String       // Reference to specific teacher-class assignment
   classTeacher   ClassTeacher @relation(fields: [classTeacherId], references: [id])
 
-  subjectId     String
-  subject       Subject @relation(fields: [subjectId], references: [id]) 
+  subjectId      String
+  subject        Subject      @relation(fields: [subjectId], references: [id])
 
-  @@unique([studentId, subjectId, classTeacherId]) // Ensure unique marks per student, subject, and teacher-class relationship
+  academicYear   String       // Field to store the academic year
+  trimester      String       // Field to store the trimester
+
+  @@unique([studentId, subjectId, classTeacherId, academicYear, trimester]) // Ensure unique marks per student, subject, teacher-class, year, and trimester
 }
+
 
 enum Role {
   ADMIN
