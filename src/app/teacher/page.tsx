@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Class, Student, Teacher } from '@prisma/client';
 import toast, { Toaster } from 'react-hot-toast';
+import Countdown from '../_components/CountDown';
 
 interface Mark {
   id: string;
@@ -39,7 +40,7 @@ const TeacherPage: React.FC = () => {
     finalExam: 35,
   };
 
-  const academicYears = ['2023-2024', '2024-2025', '2025-2026'];
+  const academicYears = [ '2024-2025', '2025-2026'];
   const trimesters = ['First Trimester', 'Second Trimester', 'Third Trimester'];
 
   useEffect(() => {
@@ -210,18 +211,28 @@ console.log(trimester)
       return updatedMarks;
     });
   };
+
+
 console.log(students)
+
+
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
       <Toaster position="top-right" />
-      <h1 className="text-xl font-bold">Hello, {teacherDetails?.name}</h1>
-      <div className="mb-4">
-        <label htmlFor="academicYear" className="block text-lg">Select Academic Year:</label>
+      <div className='flex items-center justify-between mx-auto shadow-lg mb-4 px-4 flex-wrap'>
+      <h1 className="text-lg py-2 font-bold bg-main md:w-fit w-full text-center text-white md:py-1 px-4 my-6 rounded-md">Hello, {teacherDetails?.name}</h1>
+      <p className=' md:text-xl font-bold text-main mb-2'>Subject : <span className='text-red-500'>{currentTeacher?.subjects[0]?.subject.name}</span></p>
+      <h2 className='mb-2'><Countdown targetDate='2025-01-01'/></h2>
+      </div>
+     <div className='flex justify-center text-main font-semibold gap-4 md:gap-8 lg:gap-12 md:w-3/5 items-center flex-wrap'>
+     
+      <div className="my-4">
+        {/* <label htmlFor="academicYear" className="block text-lg">Select Academic Year:</label> */}
         <select
           id="academicYear"
           value={academicYear}
           onChange={(e) => setAcademicYear(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full"
         >
           <option value="">-- Select Academic Year --</option>
           {academicYears.map((year) => (
@@ -232,8 +243,8 @@ console.log(students)
         </select>
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="trimester" className="block text-lg">Select Trimester:</label>
+      <div className="">
+        {/* <label htmlFor="trimester" className="block text-lg">Select Trimester:</label> */}
         <select
           id="trimester"
           value={trimester}
@@ -259,8 +270,8 @@ console.log(students)
 
 
       {currentTeacher?.subjects.length > 1 && (
-        <div className="mb-6">
-          <label htmlFor="subjectSelect" className="block my-2 text-xl font-medium text-lamaPurple">
+        <div className=" hidden">
+          <label htmlFor="subjectSelect" className="block my-2 text-xl font-medium ">
             Select Subject
           </label>
           <select
@@ -280,15 +291,15 @@ console.log(students)
       )}
 
       {selectedSubject && (
-        <div className="mb-6">
-          <label htmlFor="classSelect" className="block my-2 text-xl font-medium text-lamaPurple">
+        <div className="">
+          {/* <label htmlFor="classSelect" className="block my-2 text-xl font-medium text-lamaPurple">
             Select Class
-          </label>
+          </label> */}
           <select
             id="classSelect"
             value={selectedClassId}
             onChange={handleClassChange}
-            className="border border-lamaSky p-2 rounded w-full text-lg max-w-fit"
+            className="border  p-2 rounded w-full  "
           >
             <option value="">-- Select a Class --</option>
             {filteredClasses.map((classItem) => (
@@ -299,10 +310,11 @@ console.log(students)
           </select>
         </div>
       )}
+     </div>
 
       {students.length > 0 && (
         <div className="overflow-x-scroll">
-          <h2 className="text-2xl text-lamaPurple font-semibold mb-4">Students in Class</h2>
+          <h2 className="md:text-xl text-main font-bold my-4">Students in Class</h2>
           <table className="min-w-full bg-white shadow-lg rounded-lg border">
           <thead className="bg-gray-200">
   <tr>

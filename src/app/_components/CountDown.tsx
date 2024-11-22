@@ -43,8 +43,8 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate }) => {
   const { hours, minutes, seconds , days} = formatTime(timeLeft);
 
   return (
-    <div className='text-md md:text-2xl'>
-      
+    <div className='text-md md:text-2xl md:font-semibold gap-2 text-red-500 flex items-center '>
+      <h1 className='md:text-xl font-bold text-main'>Time Left : </h1>
       <div>
         {days < 10 ? `0${days}` : days}:
         {hours < 10 ? `0${hours}` : hours}:{minutes < 10 ? `0${minutes}` : minutes}:

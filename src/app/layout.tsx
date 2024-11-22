@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <ClerkProvider>
       <html lang="en" className="print:p-0 print:m-0 relative">
-        <body className="text-gray-900 h-screen bg-cover flex flex-col items-center relative">
+        <body className="text-gray-900 h-screen bg-cover flex flex-col items-center  relative">
           <Header />
           <main className="mx-auto h-screen w-full bg-cover bg-center rounded">
             {children}

@@ -226,15 +226,15 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
   return (
     <div className="w-full mx-auto p-6 pt-24 bg-white rounded-lg shadow-lg">
       <div className='flex justify-between items-center mb-3 flex-wrap print:hidden gap-2 '>
-      <h1  className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2">Admin Dashboard
-      </h1>
-      <h1  className="text-main w-full md:max-w-fit md:text-2xl  text-center rounded px-4 py-2 font-bold mb-2"> <span className='md:text-3xl font-bold'>1</span>st Trimester Data Entray <span className='text-[#e16262]'>(2024-2025)</span> 
+      {/* <h1  className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2">Admin Dashboard
+      </h1> */}
+      <h1  className="text-main w-full md:max-w-fit md:text-xl  text-center rounded px-4 py-2 font-bold mb-2"> <span className='bg-main  p-1 rounded-md text-white'><span className='md:text-xl font-bold'>1</span>st</span> Trimester Data Entray <span className='text-[#e16262]'>(2024-2025)</span> 
       </h1>
 
-      <div className='flex flex-col gap-2 w-full md:w-fit'>
+      <div className='flex  gap-2 w-full md:w-fit'>
         
         <button
-        className="font-semibold py-2 px-4 bg-main rounded md:block hidden text-white"
+        className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
         onClick={() => router.push('/teacherCreation')}
       >
         Create New Teacher
@@ -281,11 +281,11 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
     )}
       </div>
 
-      <div className="my-6 mx-auto  print:hidden flex w-fit gap-2 md:gap-12 lg: flex-wrap justify-center items-center  ">
-      <div className='flex w-full md:w-fit  gap-2 items-center justify-center'>
+      <div className="my-6 mx-auto   text-main font-semibold px-1 md:px-8 py-2  print:hidden flex w-fit gap-2 md:gap-12 lg:gap-24 flex-wrap justify-center items-center  ">
+      <div className='flex w-full md:w-fit bg-main rounded  gap-2 items-center justify-center'>
       {/* <h2 className="text-xl font-semibold ">Select Academic Year</h2> */}
   <select
-    className="border w-full rounded p-3  focus:outline-none focus:ring-2 focus:ring-blue-400"
+    className="border w-full rounded p-3  focus:outline-none focus:ring-2 focus:ring-[#5C2747]"
     onChange={(e) => setSelectedAcademicYear(e.target.value)}
     defaultValue=""
   >
@@ -306,7 +306,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
   <div className="print:hidden flex w-full  md:w-fit ">
     {/* <h2 className="text-xl font-semibold ">Select Trimester</h2> */}
     <select
-      className="border rounded p-3 w-full  focus:outline-none focus:ring-2 focus:ring-blue-400"
+      className="border rounded p-3 w-full  focus:outline-none focus:ring-2 focus:ring-[#5C2747]"
       onChange={(e) => setSelectedTrimester(e.target.value)}
       defaultValue=""
     >
@@ -323,7 +323,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
           <div className='print:hidden w-full md:w-fit bg-red-200  '>
           {/* <h2 className="text-xl font-semibold  print:hidden">Select a Subject</h2> */}
           <select
-            className="border rounded p-3 w-full   focus:outline-none focus:ring-2 hover:bg-gray-100 "
+            className="border rounded p-3 w-full  focus:outline-none focus:ring-2 focus:ring-[#5C2747] "
             onChange={handleSubjectChange}
             defaultValue=""
           >
@@ -342,7 +342,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
         <div className=" print:hidden flex w-full md:w-fit">
           {/* <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Teacher</h2> */}
           <select
-            className="border rounded  p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded  p-3 w-full focus:outline-none focus:ring-2 focus:ring-[#5C2747]"
             onChange={handleTeacherChange}
             defaultValue=""
           >
@@ -362,7 +362,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
         <div className=" print:hidden w-full md:w-fit">
           {/* <h2 className="text-xl font-semibold mb-2 print:hidden">Select a Class</h2> */}
           <select
-            className="border rounded  p-3 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="border rounded  p-3 w-full focus:outline-none focus:ring-2 focus:ring-[#5C2747]"
             onChange={handleClassChange}
             defaultValue=""
           >
@@ -408,7 +408,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
                   (studentMarks.finalExam || 0);
 
                 return (
-                  <tr key={student.id} className="hover:bg-gray-200">
+                  <tr key={student.id} className="hover:bg-[#d382a7]">
                     <td className="border p-2">{index + 1}</td>
                     <td className="border p-2 font-semibold">
                       <Link href={`/students/${student.id}/results`}>{student.name}</Link>
