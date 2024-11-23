@@ -224,9 +224,9 @@ console.log(students)
       <p className=' md:text-xl font-bold text-main mb-2'>Subject : <span className='text-red-500'>{currentTeacher?.subjects[0]?.subject.name}</span></p>
       <h2 className='mb-2'><Countdown targetDate='2025-01-01'/></h2>
       </div>
-     <div className='flex justify-center text-main font-semibold gap-4 md:gap-8 lg:gap-12 md:w-3/5 items-center flex-wrap'>
+     <div className='flex my-4 justify-center text-main font-semibold gap-4 md:gap-8 lg:gap-12  items-center flex-wrap'>
      
-      <div className="my-4">
+      <div className=" w-full md:w-fit">
         {/* <label htmlFor="academicYear" className="block text-lg">Select Academic Year:</label> */}
         <select
           id="academicYear"
@@ -243,13 +243,13 @@ console.log(students)
         </select>
       </div>
 
-      <div className="">
+      <div className="w-full md:w-fit">
         {/* <label htmlFor="trimester" className="block text-lg">Select Trimester:</label> */}
         <select
           id="trimester"
           value={trimester}
           onChange={(e) => setTrimester(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded w-full"
         >
           <option value="">-- Select Trimester --</option>
           {trimesters.map((trimesterOption) => (
@@ -270,7 +270,7 @@ console.log(students)
 
 
       {currentTeacher?.subjects.length > 1 && (
-        <div className=" hidden">
+        <div className=" hidden ">
           <label htmlFor="subjectSelect" className="block my-2 text-xl font-medium ">
             Select Subject
           </label>
@@ -291,7 +291,7 @@ console.log(students)
       )}
 
       {selectedSubject && (
-        <div className="">
+        <div className="w-full md:w-fit">
           {/* <label htmlFor="classSelect" className="block my-2 text-xl font-medium text-lamaPurple">
             Select Class
           </label> */}

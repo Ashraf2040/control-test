@@ -231,7 +231,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
       <h1  className="text-main w-full md:max-w-fit md:text-xl  text-center rounded px-4 py-2 font-bold mb-2"> <span className='bg-main  p-1 rounded-md text-white'><span className='md:text-xl font-bold'>1</span>st</span> Trimester Data Entray <span className='text-[#e16262]'>(2024-2025)</span> 
       </h1>
 
-      <div className='flex  gap-2 w-full md:w-fit'>
+      <div className='flex flex-wrap  gap-2 w-full md:w-fit'>
         
         <button
         className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
@@ -244,7 +244,14 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
   onClick={toggleTeacherProgress}
 >
   Show Teacher Progress
-</button></div>
+</button>
+<button
+  className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
+  onClick={() => router.push('/createStudents')}
+>
+ Create  New Student
+</button>
+</div>
       
 {showTeacherProgress && teacherProgress.length > 0 && (
       <div className="mt-6 w-full relative">

@@ -105,7 +105,7 @@ const TeacherCreation = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-10 relative">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-20 relative">
       <button className="absolute flex items-center justify-center right-1 top-1 text-white font-bold bg-main px-2 rounded text-lg" onClick={returnToHome}>x</button>
       <h1 className="text-2xl font-semibold text-center mb-6">Create New Teacher</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
