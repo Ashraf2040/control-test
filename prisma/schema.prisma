@@ -17,6 +17,12 @@ model Teacher {
    // Add role to identify if the teacher has a specific role
   subjects SubjectTeacher[] // Link to SubjectTeacher join table for subjects
   classes  ClassTeacher[]   // Link to ClassTeacher join table for classes
+  
+}
+
+model GlobalSettings {
+  id         String   @id @default(uuid())
+  targetDate DateTime?
 }
 
 model Class {

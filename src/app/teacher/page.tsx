@@ -4,6 +4,7 @@ import { useUser } from '@clerk/nextjs';
 import { Class, Student, Teacher } from '@prisma/client';
 import toast, { Toaster } from 'react-hot-toast';
 import Countdown from '../_components/CountDown';
+import CountdownWrapper from '../_components/CountdownWrapper';
 
 interface Mark {
   id: string;
@@ -27,6 +28,8 @@ const TeacherPage: React.FC = () => {
   const [classes, setClasses] = useState<Class[]>([]);
   const [students, setStudents] = useState<StudentWithMarks[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [isCountdownFinished, setIsCountdownFinished] = useState(false);
+  
   const [selectedSubject, setSelectedSubject] = useState<string>('');
   const [fetchedClasses, setFetchedClasses] = useState<Class[]>([]);
   const [marks, setMarks] = useState<Record<string, Mark>>({});
@@ -214,7 +217,23 @@ console.log(trimester)
 
 
 console.log(students)
+const handleCountdownEnd = () => {
+  setIsCountdownFinished(true); // Update state when the countdown ends
+  toast.error('Marks Modification closed. Please contact the admin!');
+};
 
+if (isCountdownFinished) {
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="bg-white p-6 rounded shadow-lg text-center">
+        <h1 className="text-2xl font-bold text-red-500">
+          Marks Modification Closed
+        </h1>
+        <p>Please contact the admin for further assistance.</p>
+      </div>
+    </div>
+  );
+}
 
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
@@ -222,7 +241,10 @@ console.log(students)
       <div className='flex items-center justify-between mx-auto shadow-lg mb-4 px-4 flex-wrap'>
       <h1 className="text-lg py-2 font-bold bg-main md:w-fit w-full text-center text-white md:py-1 px-4 my-6 rounded-md">Hello, {teacherDetails?.name}</h1>
       <p className=' md:text-xl font-bold text-main mb-2'>Subject : <span className='text-red-500'>{currentTeacher?.subjects[0]?.subject.name}</span></p>
-      <h2 className='mb-2'><Countdown targetDate='2025-01-01'/></h2>
+      <h2 className='mb-2'>
+        
+      <CountdownWrapper onCountdownEnd={handleCountdownEnd} />
+      </h2>
       </div>
      <div className='flex my-4 justify-center text-main font-semibold gap-4 md:gap-8 lg:gap-12  items-center flex-wrap'>
      
@@ -302,7 +324,7 @@ console.log(students)
             className="border  p-2 rounded w-full  "
           >
             <option value="">-- Select a Class --</option>
-            {filteredClasses.map((classItem) => (
+            {currentTeacher.classes.map((classItem) => (
               <option key={classItem.class.id} value={classItem.class.id}>
                 {classItem.class.name}
               </option>
