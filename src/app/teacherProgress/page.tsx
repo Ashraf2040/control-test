@@ -162,10 +162,11 @@ const TeacherProgressPage = () => {
 
   return (
     <div className="p-6 my-24">
-       <div className="p-6">
+       <div className="p-6 md:flex md:flex-col md:items-center">
       <Toaster position="top-right" />
-      <h1 className="text-xl text-main font-bold mb-4">Set Target Date</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      
+      <form onSubmit={handleSubmit} className="space-y-4 md:flex md:w-3/5 items-center md:justify-between shadow-md p-4">
+      <h1 className="text-xl text-center text-main font-bold  w-full md:w-fit">Set Target Date :</h1>
         <div>
          
           <input
@@ -173,19 +174,20 @@ const TeacherProgressPage = () => {
             id="targetDate"
             value={targetDate}
             onChange={(e) => setTargetDate(e.target.value)}
-            className="border p-2 rounded w-full"
+            className="border p-2 rounded w-full "
             required
           />
         </div>
         <button
           type="submit"
-          className="bg-main  text-white font-bold py-2 px-4 rounded"
+          className="bg-main w-full md:w-fit  text-white font-bold py-2 px-4 rounded"
         >
           Save Target Date
         </button>
       </form>
     </div>
       <h1 className="text-2xl font-semibold mb-6 text-center text-main">Teacher Progress</h1>
+      <div className='overflow-x-auto'>
       <table className="min-w-full border-collapse border border-gray-300 text-sm">
         <thead className="bg-gray-200">
           <tr>
@@ -227,6 +229,7 @@ const TeacherProgressPage = () => {
           ))}
         </tbody>
       </table>
+      </div>
 
       {isFormOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

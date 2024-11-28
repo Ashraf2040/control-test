@@ -245,11 +245,12 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
 >
   Show Teacher Progress
 </button>
+
 <button
   className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
-  onClick={() => router.push('/createStudents')}
+  onClick={() => router.push('/studentsManage')}
 >
- Create  New Student
+ Students Management
 </button>
 </div>
       

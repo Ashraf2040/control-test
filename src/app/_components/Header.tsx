@@ -46,7 +46,7 @@ const Header = () => {
     >
       <Link
         href="/"
-        className="ring-4 ring-offset-2 ring-offset-black ring-purple-900 rounded-full"
+        className=""
       >
         <Image
           src="/forqan.jpg"

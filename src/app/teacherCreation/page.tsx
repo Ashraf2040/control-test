@@ -12,6 +12,7 @@ const TeacherCreation = () => {
     password: '123456789',
     academicYear: '',  // Changed to use select box
     subjectClassAssignments: [] as { subjectId: string; classId: string }[],  // New structure to hold subject-class pairs
+    school: ''  // Added school field
   });
 
   const [subjects, setSubjects] = useState([]);
@@ -150,6 +151,24 @@ const TeacherCreation = () => {
                 {year}
               </option>
             ))}
+          </select>
+        </div>
+
+        {/* Select School */}
+        <div>
+          <label className="block text-lg font-medium text-gray-700">School:</label>
+          <select
+            name="school"
+            value={teacherData.school}
+            onChange={handleChange}
+            required
+            className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="" disabled>Select a school</option>
+            <option value="Alforqan School">Alforqan School</option>
+            <option value="Albatool Khaldia 1">Albatool Khaldia 1</option>
+            <option value="Albatool Khaldia 2">Albatool Khaldia 2</option>
+            <option value="Albatool Khaldia 3">Albatool Khaldia 3</option>
           </select>
         </div>
 

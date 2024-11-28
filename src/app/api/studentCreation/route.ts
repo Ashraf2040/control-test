@@ -4,7 +4,19 @@ import { randomUUID } from 'crypto';
 
 export async function POST(request: Request) {
   try {
-    const { name, arabicName, dob, classId, nationality, iqamaNo, passportNo } = await request.json();
+    const {
+      name,
+      arabicName,
+      dob,
+      school,
+      classId,
+      nationality,
+      iqamaNo,
+      passportNo,
+      expenses = 'paid', // Default value
+      username,
+      password,
+    } = await request.json();
 
     if (!name || !dob || !classId) {
       return NextResponse.json(
@@ -33,40 +45,37 @@ export async function POST(request: Request) {
         nationality,
         iqamaNo,
         passportNo,
+        expenses,
+        school,
+        username,
+        password,
         class: {
           connect: { id: classId },
         },
       },
     });
 
-    // Get all the subjects assigned to this class
+    // Fetch class subjects and teachers
     const classSubjects = await prisma.classSubject.findMany({
       where: { classId },
-      include: {
-        subject: true, // Include subject details
-      },
+      include: { subject: true },
     });
 
-    // Get all teachers for this class (for classTeacherId reference)
     const classTeachers = await prisma.classTeacher.findMany({
       where: { classId },
-      include: {
-        teacher: true, // Include teacher details
-      },
+      include: { teacher: true },
     });
 
-    // Define the trimesters
     const trimesters = ['First Trimester', 'Second Trimester', 'Third Trimester'];
 
-    // Create marks for the new student for each subject and trimester
-    for (const classSubject of classSubjects) {
-      for (const classTeacher of classTeachers) {
-        const markEntries = trimesters.map((trimester) => ({
+    for (const subject of classSubjects) {
+      for (const teacher of classTeachers) {
+        const marksData = trimesters.map((trimester) => ({
           id: randomUUID(),
           studentId: newStudent.id,
-          classTeacherId: classTeacher.id, // Link the mark with the class-teacher
-          subjectId: classSubject.subject.id, // Link the mark with the subject
-          academicYear: classTeacher.teacher.academicYear, // Use the teacher's academic year
+          classTeacherId: teacher.id,
+          subjectId: subject.subject.id,
+          academicYear: teacher.teacher.academicYear,
           trimester,
           participation: 0,
           behavior: 0,
@@ -75,10 +84,7 @@ export async function POST(request: Request) {
           finalExam: 0,
         }));
 
-        // Create marks for the student in the database
-        await prisma.mark.createMany({
-          data: markEntries,
-        });
+        await prisma.mark.createMany({ data: marksData });
       }
     }
 

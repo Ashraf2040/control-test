@@ -10,20 +10,21 @@ export default function HomePage() {
   const { isLoaded, userId } = useAuth(); 
   const { user } = useUser();
   const router = useRouter();
-
-  useEffect(() => {
+  let role: string | undefined;
+   useEffect(() => {
     if (isLoaded && userId) {
-      const role = user?.publicMetadata?.role;
+      role = user?.publicMetadata?.role as string | undefined
       if (role === 'ADMIN') {
         router.push('/admin');
       } else if (role === 'TEACHER') {
         router.push('/teacher');
+      } else if (role === 'STUDENT') {
+        router.push(`/studentCertificate/${userId}`);
       }
     }
   }, [isLoaded, userId, user, router]);
-
   if (!isLoaded) return <p>Loading...</p>;
-
+    
   return (
     <div className="flex flex-col  items-center    text-white w-full h-full relative">
     <Hero/>

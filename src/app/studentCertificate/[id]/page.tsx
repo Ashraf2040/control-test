@@ -11,23 +11,23 @@ export default async function StudentResultsPage({ params }: { params: { id: str
     return <p>Student not found.</p>;
   }
 
-  const { name, class: classData, marks} = studentData;
+  const { name, class: classData, marks,expenses} = studentData;
 
   const marksToView = marks.filter((mark) => mark.trimester === "First Trimester");
   console.log(studentData)
   // Check if the student has an unpaid expense
-  // if (expenses === "unpaid") {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //     <div className="bg-white p-6 rounded shadow-lg text-center">
-  //       <h1 className="text-2xl font-bold text-red-500">
-  //         Ther Is A Financial Issue
-  //       </h1>
-  //       <p className='mt-4 font-semibold'>Please contact the admin for further assistance.</p>
-  //     </div>
-  //   </div>
-  //   );
-  // }
+  if (expenses === "unpaid") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+      <div className="bg-white p-6 rounded shadow-lg text-center">
+        <h1 className="text-2xl font-bold text-red-500">
+          Ther Is A Financial Issue
+        </h1>
+        <p className='mt-4 font-semibold'>Please contact the admin for further assistance.</p>
+      </div>
+    </div>
+    );
+  }
 
   // Calculate the total marks and average
   const totalMarksSum = marks.reduce((sum, mark) => sum + mark.totalMarks, 0);
