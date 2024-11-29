@@ -163,12 +163,20 @@ const StudentPage = () => {
             </option>
           ))}
         </select>
+        <div className="lg:right-20 lg:absolute gap-5 flex justify-between items-center">
         <button
-          className="text-white w-full md:w-fit  lg:right-20 lg:absolute md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
+          className="text-white    md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold "
           onClick={() => router.push('/createStudents')}
         >
           Create New Student
         </button>
+        <button
+          className="text-white md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold "
+          onClick={() => router.push('/bulkUpload')}
+        >
+         Import  Full Sheet
+        </button>
+        </div>
       </div>
 
       {/* Student Table */}
