@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 export default function CSVUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -19,7 +19,7 @@ export default function CSVUpload() {
   // Function to validate CSV content
   const validateCSV = async () => {
     if (!file) {
-     toast.error('Please upload a CSV file.');
+      toast.error("Please upload a CSV file.");
       return;
     }
 
@@ -33,14 +33,14 @@ export default function CSVUpload() {
       const errors: string[] = [];
       const parsedStudents = [];
 
-      const rows = fileContent.split('\n').slice(1); // Skip the header row
+      const rows = fileContent.split("\n").slice(1); // Skip the header row
 
       // Simple CSV validation: Check required fields
       for (const row of rows) {
-        const columns = row.split(',');
+        const columns = row.split(",");
 
         if (columns.length !== 11) {
-          errors.push('Invalid row format: ' + row);
+          errors.push("Invalid row format: " + row);
           continue;
         }
 
@@ -72,7 +72,7 @@ export default function CSVUpload() {
     };
 
     reader.onerror = () => {
-      alert('Error reading the file');
+      alert("Error reading the file");
       setLoading(false);
     };
 
@@ -82,28 +82,28 @@ export default function CSVUpload() {
   // Function to upload validated CSV data
   const uploadCSV = async () => {
     if (students.length === 0) {
-      toast.error('No valid data to upload.');
+      toast.error("No valid data to upload.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const response = await fetch('/api/students/upload', {
-        method: 'POST',
+      const response = await fetch("/api/students/upload", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ fileContent: JSON.stringify(students) }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload students');
+        throw new Error("Failed to upload students");
       }
 
-      toast.success('CSV uploaded successfully');
-    } catch (error) {
-      alert('Error uploading CSV: ' + error.message);
+      toast.success("CSV uploaded successfully");
+    } catch (error: any) {
+      alert("Error uploading CSV: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -111,39 +111,43 @@ export default function CSVUpload() {
 
   return (
     <div className="p-6 my-24">
-      <h1 className="text-2xl font-semibold mb-6 text-center text-main">CSV Students Upload</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-center text-main">Bulk Students Upload</h1>
 
       {/* File Upload Section */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Upload CSV File</label>
+      <div className="mb-6 ">
+        <label className="block text-lg font-medium text-main mb-4">Upload CSV File</label>
         <input
           type="file"
           accept=".csv"
           onChange={handleFileChange}
-          className="w-full border p-3 rounded-md"
+          className="w-full md:max-w-fit text-main border p-3 rounded-md"
         />
+        <a
+          href="/Students_File.csv"
+          download="Students_File.csv"
+          className="text-blue-500 underline ml-2"
+        >
+          Download Sample File
+        </a>
       </div>
 
-      {/* Validation Button */}
+      {/* Validation and Upload Buttons */}
       <div className="mb-6 text-center font-semibold flex justify-center gap-5">
         <button
           onClick={validateCSV}
           disabled={loading}
-          className={`px-6 py-3 bg-main text-white rounded-md ${loading ? 'cursor-wait opacity-50' : ''}`}
+          className={`px-6 py-3 bg-main text-white rounded-md ${loading ? "cursor-wait opacity-50" : ""}`}
         >
-          {loading ? 'Validating...' : 'Validate CSV'}
+          {loading ? "Validating..." : "Validate CSV"}
         </button>
         <button
           onClick={uploadCSV}
           disabled={loading || students.length === 0}
-          className={`px-6 py-3 bg-red-900 text-white rounded-md ${loading ? 'cursor-wait opacity-50' : ''}`}
+          className={`px-6 py-3 bg-red-900 text-white rounded-md ${loading ? "cursor-wait opacity-50" : ""}`}
         >
-          {loading ? 'Uploading...' : 'Import CSV'}
+          {loading ? "Uploading..." : "Import CSV"}
         </button>
       </div>
-
-      {/* Upload Button */}
-     
 
       {/* Validation Errors */}
       {validationErrors.length > 0 && (

@@ -21,7 +21,7 @@ export default async function StudentResultsPage({ params }: { params: { id: str
       <div className="flex items-center justify-center h-screen">
       <div className="bg-white p-6 rounded shadow-lg text-center">
         <h1 className="text-2xl font-bold text-red-500">
-          Ther Is A Financial Issue
+          There is a Financial Issue .
         </h1>
         <p className='mt-4 font-semibold'>Please contact the admin for further assistance.</p>
       </div>

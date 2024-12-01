@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 const TeacherCreation = () => {
   const router = useRouter();
@@ -94,10 +95,10 @@ const TeacherCreation = () => {
     });
 
     if (response.ok) {
-      alert('Teacher created successfully!');
+      toast.success('Teacher created successfully!');
       router.push('/admin');
     } else {
-      alert('Failed to create teacher');
+      toast.error('Failed to create teacher');
     }
   };
 
