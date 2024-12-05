@@ -5,6 +5,7 @@ import { Class, Student, Teacher } from '@prisma/client';
 import toast, { Toaster } from 'react-hot-toast';
 import Countdown from '../_components/CountDown';
 import CountdownWrapper from '../_components/CountdownWrapper';
+import { useRouter } from 'next/navigation';
 
 interface Mark {
   id: string;
@@ -45,6 +46,38 @@ const TeacherPage: React.FC = () => {
 
   const academicYears = [ '2024-2025', '2025-2026'];
   const trimesters = ['First Trimester', 'Second Trimester', 'Third Trimester'];
+
+  const router = useRouter();
+  console.log(fetchedClasses)
+  const navigateToProgressReport = () => {
+    // Validate required fields
+    if (!selectedClassId || !selectedSubject || !academicYear || !trimester) {
+      toast.error('Please select all required fields to proceed.');
+      return;
+    }
+  
+    // Extract values
+    const className =fetchedClasses?.find((c) => c.class.id === selectedClassId)?.class.name
+
+    console.log(className)
+
+    const teacherName = teacherDetails?.name || '';
+    const subjectName =currentTeacher?.subjects[0]?.subject.name
+  
+    // Construct URL with query parameters
+    const queryParams = new URLSearchParams({
+      class: className || '',
+      teacherName: teacherName || '',
+      trimester: trimester || '',
+      subject: subjectName || '',
+    });
+  
+    // Navigate to the new page
+    router.push(`/studentsProgress?${queryParams.toString()}`);
+  };
+  
+  
+  
 
   useEffect(() => {
     const fetchTeacherDetails = async () => {
@@ -235,6 +268,8 @@ if (isCountdownFinished) {
   );
 }
 
+
+
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
       <Toaster position="top-right" />
@@ -336,7 +371,14 @@ if (isCountdownFinished) {
 
       {students.length > 0 && (
         <div className="overflow-x-scroll">
-          <h2 className="md:text-xl text-main font-bold my-4">Students in Class</h2>
+         <div className='flex items-center justify-between'>
+         <h2 className="md:text-xl text-main font-bold my-4">Students in Class</h2>  <button
+        onClick={navigateToProgressReport}
+        className="bg-main hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+      >
+        Students Progress Report
+      </button>
+         </div>
           <table className="min-w-full bg-white shadow-lg rounded-lg border">
           <thead className="bg-gray-200">
   <tr>

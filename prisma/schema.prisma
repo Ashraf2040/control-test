@@ -8,56 +8,57 @@ datasource db {
 }
 
 model Teacher {
-  id       String           @id @default(uuid())
-  email    String           @unique
-  password String
-  name     String
-  role     Role             @default(TEACHER)
-  school   String?
-  academicYear    String
-   // Add role to identify if the teacher has a specific role
-  subjects SubjectTeacher[] // Link to SubjectTeacher join table for subjects
-  classes  ClassTeacher[]   // Link to ClassTeacher join table for classes
-  
+  id           String           @id @default(uuid())
+  email        String           @unique
+  password     String
+  name         String
+  role         Role             @default(TEACHER)
+  school       String?
+  academicYear String
+  subjects     SubjectTeacher[] // Link to SubjectTeacher join table for subjects
+  classes      ClassTeacher[] // Link to ClassTeacher join table for classes
+  reports      StudentReport[] // Relation to StudentReport model
 }
 
 model GlobalSettings {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   targetDate DateTime?
 }
 
 model Class {
-  id       String         @id @default(uuid())
+  id       String          @id @default(uuid())
   name     String
+  reports  StudentReport[] // Relation to StudentReport model
   teachers ClassTeacher[] // Link to ClassTeacher join table for teachers
-  students Student[]      // Link to students in this class
-  subjects ClassSubject[] // Link to ClassSubject join table for subjects (opposite relation)
+  students Student[] // Link to students in this class
+  subjects ClassSubject[] // Link to ClassSubject join table for subjects
 }
 
 model Student {
-  id            String    @id @default(uuid())
-  name          String
-  arabicName    String?
-  classId       String
-  class         Class     @relation(fields: [classId], references: [id])
-  marks         Mark[]    // Marks per subject/teacher combination
-  nationality   String?   // Optional field for nationality
-  dateOfBirth   DateTime? // Optional field for date of birth
-  iqamaNo       String?   // Optional field for ID/Iqama Number
-  passportNo    String?
- expenses      String   @default("paid")
- username      String?
- password      String?
- school   String?
-    // Optional field for passport number
+  id          String          @id @default(uuid())
+  name        String
+  arabicName  String?
+  classId     String
+  class       Class           @relation(fields: [classId], references: [id])
+  marks       Mark[] // Marks per subject/teacher combination
+  nationality String? // Optional field for nationality
+  dateOfBirth DateTime? // Optional field for date of birth
+  iqamaNo     String? // Optional field for ID/Iqama Number
+  passportNo  String?
+  expenses    String          @default("paid")
+  username    String?
+  password    String?
+  school      String?
+  reports     StudentReport[] // Relation to StudentReport model
 }
 
 model Subject {
   id       String           @id @default(uuid())
   name     String
   teachers SubjectTeacher[] // Link to SubjectTeacher join table for teachers
-  classes  ClassSubject[]   // Link to ClassSubject join table for classes
-  marks    Mark[]           // Relation field for marks
+  classes  ClassSubject[] // Link to ClassSubject join table for classes
+  marks    Mark[] // Relation field for marks
+  reports  StudentReport[]  @relation("subjectReports") // Relation to StudentReport
 }
 
 model ClassTeacher {
@@ -65,10 +66,9 @@ model ClassTeacher {
   classId   String
   teacherId String
 
-  class    Class   @relation(fields: [classId], references: [id])
-  teacher  Teacher @relation(fields: [teacherId], references: [id])
-
-  marks    Mark[]  // Link to marks for specific subjects under this teacher-class relationship
+  class   Class   @relation(fields: [classId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  marks   Mark[] // Link to marks for specific subjects under this teacher-class relationship
 
   @@unique([classId, teacherId])
 }
@@ -89,42 +89,65 @@ model SubjectTeacher {
   subjectId String
   teacherId String
 
-  subject  Subject @relation(fields: [subjectId], references: [id])
-  teacher  Teacher @relation(fields: [teacherId], references: [id])
+  subject Subject @relation(fields: [subjectId], references: [id])
+  teacher Teacher @relation(fields: [teacherId], references: [id])
 
   @@unique([subjectId, teacherId])
 }
 
 model Mark {
-  id             String      @id @default(uuid())
-  participation  Int?
-  behavior       Int?
-  workingQuiz    Int?
-  project        Int?
-  finalExam      Int?
-  totalMarks     Int?
+  id            String @id @default(uuid())
+  participation Int?
+  behavior      Int?
+  workingQuiz   Int?
+  project       Int?
+  finalExam     Int?
+  totalMarks    Int?
 
-  homework       Int?        // Only for Arabic or Social Arabic
-  classActivities Int?       // Only for Arabic or Social Arabic
-  memorizing     Int?        // Only for Islamic subject
-  reading        Int?        // Only for Islamic subject
-  oralTest       Int?        // Only for Islamic subject
+  homework        Int? // Only for Arabic or Social Arabic
+  classActivities Int? // Only for Arabic or Social Arabic
+  memorizing      Int? // Only for Islamic subject
+  reading         Int? // Only for Islamic subject
+  oralTest        Int? // Only for Islamic subject
 
-  studentId      String
-  student        Student     @relation(fields: [studentId], references: [id])
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id])
 
-  classTeacherId String       // Reference to specific teacher-class assignment
+  classTeacherId String
   classTeacher   ClassTeacher @relation(fields: [classTeacherId], references: [id])
 
-  subjectId      String
-  subject        Subject      @relation(fields: [subjectId], references: [id])
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id])
 
-  academicYear   String       // Field to store the academic year
-  trimester      String       // Field to store the trimester
+  academicYear String
+  trimester    String
 
-  @@unique([studentId, subjectId, classTeacherId, academicYear, trimester]) // Ensure unique marks per student, subject, teacher-class, year, and trimester
+  @@unique([studentId, subjectId, classTeacherId, academicYear, trimester])
 }
 
+model StudentReport {
+  id        String  @id @default(uuid())
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id])
+
+  classId String
+  class   Class  @relation(fields: [classId], references: [id])
+
+  teacherId String
+  teacher   Teacher @relation(fields: [teacherId], references: [id])
+
+  subjectId String
+  subject   Subject @relation(fields: [subjectId], references: [id], name: "subjectReports")
+
+  academicYear  String
+  trimester     String
+  reportContent String // Field to store the report content (e.g., JSON, text)
+
+  createdAt DateTime @default(now()) // Timestamp when the report was created
+  updatedAt DateTime @updatedAt // Timestamp when the report was last updated
+
+  @@unique([studentId, subjectId, teacherId, academicYear, trimester]) // Ensure unique reports per student, subject, teacher, academic year, and trimester
+}
 
 enum Role {
   ADMIN
