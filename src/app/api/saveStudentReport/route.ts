@@ -51,6 +51,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Report already exists for this student, subject, teacher, and trimester.' }, { status: 400 });
     }
 
+    // Extract report data
+    const { presentStatus, recommendations, comment } = report;
+
     // Save the student report
     const savedReport = await prisma.studentReport.create({
       data: {
@@ -60,7 +63,9 @@ export async function POST(req: NextRequest) {
         subjectId: relatedSubject.id,
         academicYear: teacher.academicYear, // Assuming the teacher's academic year applies
         trimester,
-        reportContent: JSON.stringify(report), // Save report content as JSON string
+        status: presentStatus || 'Not Started',  // Default to 'Not Started' if missing
+        recommendations: recommendations || [],   // Default to empty array if missing
+        comment: comment || '',                   // Default to empty string if missing
       },
     });
 

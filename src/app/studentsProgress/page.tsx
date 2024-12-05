@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation'; // Import useSearchParams
 import toast from 'react-hot-toast';
-
+import 'react-toastify/dist/ReactToastify.css';
+import { revalidatePath } from 'next/cache';
 interface Student {
   id: string;
   name: string;
@@ -83,21 +84,24 @@ const StudentsProgress: React.FC = () => {
   
       if (!response.ok) throw new Error('Failed to save report.');
   
+      // Update the students state to mark the report as "Done"
+      setStudents((prevStudents) =>
+        prevStudents.map((student) =>
+          student.id === selectedStudent.id
+            ? { ...student, reportStatus: 'Done' }
+            : student
+        )
+      );
+  
       toast.success('Report saved successfully!');
-  
-      // After saving, refetch the students to update their report status
-      const refetchResponse = await fetch(`/api/studentsProgress?className=${className}&subject=${subject}&trimester=${trimester}&teacherName=${teacherName}`);
-      if (refetchResponse.ok) {
-        const refetchedData = await refetchResponse.json();
-        setStudents(refetchedData);
-      }
-  
       setSelectedStudent(null);
     } catch (error) {
       console.error(error);
       toast.error('Error saving the report.');
     }
   };
+  
+  
 
   console.log(students);
 
@@ -125,7 +129,7 @@ const StudentsProgress: React.FC = () => {
     <td className="p-3">{trimester}</td>
     <td className="p-3">
   {student.reportStatus === 'Done' ? (
-    'Done'
+    <h1 className=" text-green-700 font-bold ">Done</h1>
   ) : (
     <button
       onClick={() => handleAddReport(student)}

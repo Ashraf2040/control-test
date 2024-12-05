@@ -126,28 +126,32 @@ model Mark {
 }
 
 model StudentReport {
-  id        String  @id @default(uuid())
-  studentId String
-  student   Student @relation(fields: [studentId], references: [id])
+  id             String   @id @default(uuid())
+  studentId      String
+  student        Student  @relation(fields: [studentId], references: [id])
 
-  classId String
-  class   Class  @relation(fields: [classId], references: [id])
+  classId        String
+  class          Class    @relation(fields: [classId], references: [id])
 
-  teacherId String
-  teacher   Teacher @relation(fields: [teacherId], references: [id])
+  teacherId      String
+  teacher        Teacher  @relation(fields: [teacherId], references: [id])
 
-  subjectId String
-  subject   Subject @relation(fields: [subjectId], references: [id], name: "subjectReports")
+  subjectId      String
+  subject        Subject  @relation(fields: [subjectId], references: [id], name: "subjectReports")
 
-  academicYear  String
-  trimester     String
-  reportContent String // Field to store the report content (e.g., JSON, text)
+  academicYear   String
+  trimester      String
 
-  createdAt DateTime @default(now()) // Timestamp when the report was created
-  updatedAt DateTime @updatedAt // Timestamp when the report was last updated
+  status         String   // New field for status
+  recommendations String[] // New field for recommendations (array of strings)
+  comment String @default("")  // New field for comment
 
-  @@unique([studentId, subjectId, teacherId, academicYear, trimester]) // Ensure unique reports per student, subject, teacher, academic year, and trimester
+  createdAt      DateTime @default(now()) // Timestamp when the report was created
+  updatedAt      DateTime @updatedAt // Timestamp when the report was last updated
+
+  @@unique([studentId, subjectId, teacherId, academicYear, trimester])
 }
+
 
 enum Role {
   ADMIN
