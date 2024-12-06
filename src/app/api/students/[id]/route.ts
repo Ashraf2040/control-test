@@ -1,5 +1,3 @@
-// app/api/students/[id]/route.ts
-
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
@@ -43,6 +41,19 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ message: 'Mark not found.' }, { status: 404 });
     }
 
+    // Calculate the total marks dynamically based on fields present
+    const totalMarks = (
+      (updatedData.participation || 0) +
+      (updatedData.behavior || 0) +
+      (updatedData.workingQuiz || 0) +
+      (updatedData.project || 0) +
+      (updatedData.finalExam || 0) +
+      (updatedData.reading || 0) +
+      (updatedData.memorizing || 0) +
+      (updatedData.oralTest || 0) +
+      (updatedData.classActivities || 0)
+    );
+
     // Update the marks
     const updatedMarks = await prisma.mark.update({
       where: { id: markId },
@@ -52,22 +63,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         workingQuiz: updatedData.workingQuiz,
         project: updatedData.project,
         finalExam: updatedData.finalExam,
-        totalMarks: (
-          (updatedData.participation || 0) +
-          (updatedData.behavior || 0) +
-          (updatedData.workingQuiz || 0) +
-          (updatedData.project || 0) +
-          (updatedData.finalExam || 0)
-        ),
-        academicYear: updatedData.academicYear, // Add this
-        trimester: updatedData.trimester,       // Add this
+        reading: updatedData.reading,
+        memorizing: updatedData.memorizing,
+        oralTest: updatedData.oralTest,
+        classActivities: updatedData.classActivities,
+        totalMarks: totalMarks,  // Update totalMarks based on calculations
       },
     });
-    
 
     return NextResponse.json(updatedMarks, { status: 200 });
+
   } catch (error) {
-    console.error('Error updating marks:', error);
-    return NextResponse.json({ error: 'Failed to update marks' }, { status: 500 });
+    console.error("Error updating marks:", error);
+    return NextResponse.json({ error: 'Error updating marks. Please try again.' }, { status: 500 });
   }
 }

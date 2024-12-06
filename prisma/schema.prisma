@@ -103,7 +103,6 @@ model Mark {
   project       Int?
   finalExam     Int?
   totalMarks    Int?
-
   homework        Int? // Only for Arabic or Social Arabic
   classActivities Int? // Only for Arabic or Social Arabic
   memorizing      Int? // Only for Islamic subject

@@ -14,6 +14,10 @@ interface Mark {
   workingQuiz?: number;
   project?: number;
   finalExam?: number;
+  reading?: number;
+  memorizing?: number;
+  oralTest?: number;
+  classActivities?: number;
   totalMarks?: number;
 }
 
@@ -36,13 +40,58 @@ const TeacherPage: React.FC = () => {
   const [marks, setMarks] = useState<Record<string, Mark>>({});
   const [teacherDetails, setTeacherDetails] = useState<Teacher | null>(null);
 
-  const maxValues = {
-    participation: 15,
-    behavior: 15,
-    workingQuiz: 15,
-    project: 20,
-    finalExam: 35,
+  const getMaxValues = (subject: string) => {
+    switch (subject.toLowerCase()) {
+      case 'arabic':
+        return {
+          participation: 10,
+          behavior: 5,
+          project: 10,
+          classActivities: 15,
+          workingQuiz: 20,
+          finalExam: 40,
+          reading: 0,
+          memorizing: 0,
+          oralTest: 0,
+        };
+      case 'social arabic':
+        return {
+          participation: 10,
+          behavior: 10,
+          project: 10,
+          classActivities: 10,
+          workingQuiz: 20,
+          finalExam: 40,
+          reading: 0,
+          memorizing: 0,
+          oralTest: 0,
+        };
+      case 'islamic':
+        return {
+          participation: 10,
+          behavior: 10,
+          reading: 10,
+          memorizing: 10,
+          oralTest: 5,
+          workingQuiz: 15,
+          finalExam: 40,
+          classActivities: 0,
+        };
+      default:
+        return {
+          participation: 15,
+          behavior: 15,
+          workingQuiz: 15,
+          finalExam: 35,
+          project: 20,
+          reading: 0,
+          memorizing: 0,
+          oralTest: 0,
+          classActivities: 0,
+        };
+    }
   };
+  
 
   const academicYears = [ '2024-2025', '2025-2026'];
   const trimesters = ['First Trimester', 'Second Trimester', 'Third Trimester'];
@@ -145,6 +194,10 @@ console.log(trimester)
             workingQuiz: studentMark.workingQuiz || 0,
             project: studentMark.project || 0,
             finalExam: studentMark.finalExam || 0,
+            reading: studentMark.reading || 0,
+            memorizing: studentMark.memorizing || 0,
+            oralTest: studentMark.oralTest || 0,
+            classActivities: studentMark.classActivities || 0,
           };
         });
         setMarks(initialMarks);
@@ -165,16 +218,27 @@ console.log(trimester)
   const handleSubjectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSubject(event.target.value);
   };
-
   const handleMarkChange = (studentId: string, field: keyof Mark, value: string) => {
+    const maxValuesForSubject = getMaxValues(selectedSubject); // Get the max values based on selected subject
+    const maxValue = maxValuesForSubject[field] || 0;
+  
+    const newValue = value ? Number(value) : undefined;
+  
+    if (newValue !== undefined && newValue > maxValue) {
+      // If the value exceeds maxValue, show a toast error and don't update the mark
+      toast.error(`Max value for ${field} is ${maxValue}`);
+      return;
+    }
+  
     setMarks((prevMarks) => ({
       ...prevMarks,
       [studentId]: {
         ...(prevMarks[studentId] || {}),
-        [field]: value ? Number(value) : undefined,
+        [field]: newValue,
       },
     }));
   };
+  
 
   const calculateTotalMarks = (studentId: string): number => {
     const studentMarks = marks[studentId] || {};
@@ -183,7 +247,11 @@ console.log(trimester)
       (studentMarks.behavior || 0) +
       (studentMarks.workingQuiz || 0) +
       (studentMarks.project || 0) +
-      (studentMarks.finalExam || 0)
+      (studentMarks.finalExam || 0)+
+      (studentMarks.reading || 0) +
+      (studentMarks.memorizing || 0) +
+      (studentMarks.oralTest || 0) +
+      (studentMarks.classActivities || 0)
     );
   };
 
@@ -203,6 +271,10 @@ console.log(trimester)
               workingQuiz: studentMarks.workingQuiz,
               project: studentMarks.project,
               finalExam: studentMarks.finalExam,
+              reading: studentMarks.reading,
+              memorizing: studentMarks.memorizing,
+              oralTest: studentMarks.oralTest,
+              classActivities: studentMarks.classActivities,
               academicYear,
               trimester,
             }),
@@ -221,8 +293,10 @@ console.log(trimester)
     }
   };
    console.log(currentTeacher)
-  const fillAllMarks = (field: keyof Mark) => {
-    const maxValue = maxValues[field];
+   const fillAllMarks = (field: keyof Mark) => {
+    const subjectFetched = currentTeacher?.subjects[0]?.subject.name
+    const maxValuesForSubject = getMaxValues(subjectFetched); // Get the max values based on selected subject
+    const maxValue = maxValuesForSubject[field];  // Use maxValuesForSubject to get the max value for the field
     setMarks((prevMarks) => {
       const updatedMarks = { ...prevMarks };
       students.forEach((student) => {
@@ -234,7 +308,7 @@ console.log(trimester)
       return updatedMarks;
     });
   };
-
+  
   const resetAllMarks = (field: keyof Mark) => {
     setMarks((prevMarks) => {
       const updatedMarks = { ...prevMarks };
@@ -247,6 +321,9 @@ console.log(trimester)
       return updatedMarks;
     });
   };
+  
+
+
 
 
 console.log(students)
@@ -268,7 +345,15 @@ if (isCountdownFinished) {
   );
 }
 
-
+const tableHeaders = () => {
+  if (currentTeacher?.subjects.some((subject) => subject.subject.name.toLowerCase() === 'arabic' || subject.subject.name.toLowerCase() === 'social arabic')) {
+    return ['participation', 'behavior', 'project', 'classActivities', 'workingQuiz', 'finalExam'];
+  } else if (currentTeacher?.subjects.some((subject) => subject.subject.name.toLowerCase() === 'islamic')) {
+    return ['participation', 'behavior', 'reading', 'memorizing', 'oralTest', 'workingQuiz', 'finalExam'];
+  } else {
+    return ['participation', 'behavior', 'workingQuiz','project', 'finalExam', ];
+  }
+};
 
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
@@ -301,7 +386,7 @@ if (isCountdownFinished) {
       </div>
 
       <div className="w-full md:w-fit">
-        {/* <label htmlFor="trimester" className="block text-lg">Select Trimester:</label> */}
+      
         <select
           id="trimester"
           value={trimester}
@@ -316,15 +401,6 @@ if (isCountdownFinished) {
           ))}
         </select>
       </div>
-
-
-
-
-
-
-
-
-
 
       {currentTeacher?.subjects.length > 1 && (
         <div className=" hidden ">
@@ -349,9 +425,7 @@ if (isCountdownFinished) {
 
       {selectedSubject && (
         <div className="w-full md:w-fit">
-          {/* <label htmlFor="classSelect" className="block my-2 text-xl font-medium text-lamaPurple">
-            Select Class
-          </label> */}
+         
           <select
             id="classSelect"
             value={selectedClassId}
@@ -384,23 +458,24 @@ if (isCountdownFinished) {
   <tr>
     <th className="p-3 text-center text-black">NO</th>
     <th className="p-3 text-center text-black">Name</th>
-    {['participation', 'behavior', 'workingQuiz', 'project', 'finalExam'].map((field) => (
+    {tableHeaders().map((field) => (
       <th key={field} className="p-3 text-center text-black">
         {/* Conditional display names for workingQuiz and finalExam */}
-        {field === 'workingQuiz' ? 'Quiz' : field === 'finalExam' ? 'Exam' : field.charAt(0).toUpperCase() + field.slice(1)}
+        {field === 'workingQuiz' ? 'Quiz' : field === 'finalExam' ? 'Exam' : field === 'behavior' ? 'Homework' : field.charAt(0).toUpperCase() + field.slice(1)}
         
+        <div className='mt-1 text-main'>
         <button
           onClick={() => fillAllMarks(field as keyof Mark)}
-          className="ml-2 bg-main hover:bg-gray-400 text-xs font-bold py-1 px-2 rounded text-white"
-        >
+          className="ml-2  hover:bg-gray-400 text-[14px] underline font-bold py-1 px-2 rounded ">
           Fill
         </button>
         <button
           onClick={() => resetAllMarks(field as keyof Mark)}
-          className="ml-2 bg-[#e16262] hover:bg-gray-400 text-xs font-bold py-1 px-2 rounded text-white"
+          className="ml-2  hover:bg-gray-400 underline text-[14px] font-bold py-1 px-2 rounded "
         >
           Reset 
         </button>
+        </div>
       </th>
     ))}
     <th className="p-3 text-center text-black">Total</th>
@@ -416,7 +491,7 @@ if (isCountdownFinished) {
                     <span className="font-bold">{index + 1}</span>
                   </td>
                   <td className="text-[14px] font-bold">{student.name}</td>
-                  {['participation', 'behavior', 'workingQuiz', 'project', 'finalExam'].map((field) => (
+                  {tableHeaders().map((field) => (
                       <td key={field} className="p-1">
                       <input
                         type="number"

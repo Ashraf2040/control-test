@@ -148,13 +148,13 @@ const StudentPage = () => {
           name="name"
           value={filter.name}
           onChange={handleFilterChange}
-          className="border p-2 rounded w-[60%] md:w-1/3"
+          className="border p-2 rounded w-[560%] md:w-1/4"
         />
         <select
           name="classId"
           value={filter.classId}
           onChange={handleFilterChange}
-          className="border p-2 rounded w-1/3"
+          className="border p-2 rounded w-1/3 mr-2"
         >
           <option value="">All Classes</option>
           {classes.map((cls) => (
@@ -163,7 +163,7 @@ const StudentPage = () => {
             </option>
           ))}
         </select>
-        <div className="lg:right-20 lg:absolute gap-5 flex justify-between items-center">
+        <div className="lg:right-8 lg:absolute gap-5 flex justify-between items-center">
         <button
           className="text-white    md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold "
           onClick={() => router.push('/createStudents')}
@@ -176,6 +176,12 @@ const StudentPage = () => {
         >
          Import  Full Sheet
         </button>
+        <button
+  className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold "
+  onClick={() => router.push('/studentsReport')}
+>
+ View Students Reports
+</button>
         </div>
       </div>
 

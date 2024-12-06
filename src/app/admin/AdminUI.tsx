@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getTeachersProgress } from '@/lib/actions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 interface AdminUIProps {
   subjects: Subject[];
 }
@@ -26,7 +27,23 @@ interface LocalStudent {
   workingQuiz?: number;
   project?: number;
   finalExam?: number;
+  reading?: number;
+  memorizing?: number;
+  oralTest?: number;
+  classActivities?: number;
 }
+
+const headerToDataKeyMap: { [key: string]: keyof LocalStudent } = {
+  'Class Activities': 'classActivities',
+  'Quiz': 'workingQuiz', // Changed from 'Working Quiz' to 'Quiz'
+  'Exam': 'finalExam', // Changed from 'Final Exam' to 'Exam'
+  'Participation': 'participation',
+  'Homework': 'behavior', // Changed from 'Behavior' to 'Homework'
+  'Project': 'project',
+  'Reading': 'reading',
+  'Memorizing': 'memorizing',
+  'Oral Test': 'oralTest',
+};
 
 const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -41,7 +58,7 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   const [showTeacherProgress, setShowTeacherProgress] = useState(false);
   const [teacherProgress, setTeacherProgress] = useState<any[]>([]);
   const [selectedAcademicYear, setSelectedAcademicYear] = useState<string | null>(null);
-const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
+  const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -51,40 +68,74 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
     const data = await res.json();
     return data;
   };
-  const MAX_VALUES = {
-    behavior: 15,
-    participation: 15,
-    workingQuiz: 15,
-    project: 20,
-    finalExam: 35,
+  const getMaxValues = (subject: string) => {
+    switch (subject.toLowerCase()) {
+      case '8':
+      case '6':
+        return {
+          participation: 10,
+          behavior: 5,
+          project: 10,
+          classActivities: 15,
+          workingQuiz: 20,
+          finalExam: 40,
+          reading: 0,
+          memorizing: 0,
+          oralTest: 0,
+        };
+      case '7':
+        return {
+          participation: 10,
+          behavior: 10,
+          reading: 10,
+          memorizing: 10,
+          oralTest: 5,
+          workingQuiz: 15,
+          finalExam: 40,
+          project: 0,
+          classActivities: 0,
+        };
+      default:
+        return {
+          participation: 15,
+          behavior: 15,
+          workingQuiz: 15,
+          finalExam: 35,
+          project: 20,
+          reading: 0,
+          memorizing: 0,
+          oralTest: 0,
+          classActivities: 0,
+        };
+    }
   };
 
   const getInputClass = (value: number | undefined, field: keyof LocalStudent) => {
-    const maxValue = MAX_VALUES[field];
+    const maxValues = getMaxValues(selectedSubjectId || '');
+    const maxValue = maxValues[field];
     const isBelowThreshold = (value || 0) < maxValue * 0.66;
-    return `w-full text-center  ${isBelowThreshold ? 'bg-red-100' : ''}`;
+    return `w-full text-center ${isBelowThreshold ? 'bg-red-100' : ''}`;
   };
   const fetchClasses = async (teacherId: string) => {
     const res = await fetch(`/api/classesByAdmin?teacherId=${teacherId}&subjectId=${selectedSubjectId}`);
     if (!res.ok) throw new Error('Failed to fetch classes');
     const data = await res.json();
-    console.log(data)
+    console.log(data);
     return data;
   };
 
-  console.log(classes)
   useEffect(() => {
     const fetchStudents = async () => {
       if (!selectedClassId || !selectedTeacherId || !selectedSubjectId || !selectedAcademicYear || !selectedTrimester) return;
-    
+
       try {
         const response = await fetch(
           `/api/students?classId=${selectedClassId}&teacherId=${selectedTeacherId}&subjectId=${selectedSubjectId}&academicYear=${selectedAcademicYear}&trimester=${selectedTrimester}`
         );
         if (!response.ok) throw new Error('Failed to fetch students');
-    
+
         const data = await response.json();
-    
+
         const mappedStudents = data.map((student: any) => ({
           ...student,
           behavior: student.marks?.behavior || 0,
@@ -93,13 +144,12 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
           project: student.marks?.project || 0,
           finalExam: student.marks?.finalExam || 0,
         }));
-    
+
         setStudents(mappedStudents);
       } catch (error) {
         console.error(error);
       }
     };
-    
 
     fetchStudents();
   }, [selectedClassId, selectedTeacherId, selectedSubjectId]);
@@ -115,6 +165,10 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
           workingQuiz: mark.workingQuiz || 0,
           project: mark.project || 0,
           finalExam: mark.finalExam || 0,
+          classActivities: mark.classActivities || 0,
+          reading: mark.reading || 0,
+          memorizing: mark.memorizing || 0,
+          oralTest: mark.oralTest || 0,
         };
       });
       setMarks(initialMarks);
@@ -124,7 +178,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
   const handleSubjectChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const subjectId = e.target.value;
     setSelectedSubjectId(subjectId);
-  
+
     // Reset teacher, class, and student data when changing the subject
     setTeachers([]);
     setSelectedTeacherId(null);
@@ -132,11 +186,10 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
     setSelectedClassId(null);
     setSelectedClassName(null);
     setStudents([]);
-    setSelectedTeacherEmail(null);  
+    setSelectedTeacherEmail(null);
     const teachersData = await fetchTeachersBySubject(subjectId);
     setTeachers(teachersData);
   };
-  
 
   const handleTeacherChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const teacherId = e.target.value;
@@ -145,7 +198,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
     const selectedTeacher = teachers.find((teacher) => teacher.id === teacherId);
     if (selectedTeacher) {
       setSelectedTeacherEmail(selectedTeacher.name);
-      console.log(selectedTeacher)
+      console.log(selectedTeacher);
     }
 
     const classesData = await fetchClasses(teacherId);
@@ -168,24 +221,25 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
   const handlePrintCertificate = () => {
     window.print();
   };
+
   const toggleTeacherProgress = () => {
     setShowTeacherProgress(!showTeacherProgress);
   };
-  useEffect(() => {
-    const fetchTeacherProgress = async () => {
-      try {
-        const response = await fetch('/api/teacherProgress');
-        const progressData = await response.json();
-        setTeacherProgress(progressData);
-      } catch (error) {
-        console.error('Error fetching teacher progress:', error);
-      }
-    };
+
+  const getDynamicHeaders = () => {
+    if (!selectedSubjectId) return [];
   
-    if (showTeacherProgress) {
-      fetchTeacherProgress();
+    if (selectedSubjectId === '8' || selectedSubjectId === '6') {
+      return ['Participation', 'Homework', 'Project', 'Class Activities', 'Quiz', 'Exam'];
     }
-  }, [showTeacherProgress]);
+  
+    if (selectedSubjectId === '7') {
+      return ['Participation', 'Homework', 'Reading', 'Memorizing', 'Oral Test', 'Quiz', 'Exam'];
+    }
+  
+    return ['Participation', 'Homework', 'Quiz', 'Exam', 'Project'];
+  };
+
   const handleInputChange = (studentId: string, field: keyof LocalStudent, value: number) => {
     setMarks((prev) => ({
       ...prev,
@@ -195,6 +249,7 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
       },
     }));
   };
+
   const handleSaveMarks = async () => {
     try {
       const responses = await Promise.all(
@@ -223,6 +278,9 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
     }
   };
 
+  const dynamicHeaders = getDynamicHeaders()
+
+  console.log(students);
   return (
     <div className="w-full mx-auto p-6 pt-24 bg-white rounded-lg shadow-lg">
       <div className='flex justify-between items-center mb-3 flex-wrap print:hidden gap-2 '>
@@ -398,91 +456,60 @@ const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
 {students.length > 0 && (
         <div id="certificate" className="p-2 border border-gray-300 rounded-lg overflow-scroll">
           
-          <table className="min-w-full border-collapse border border-gray-200 text-sm ">
-            <thead className="bg-main text-white">
-              <tr>
-                <th className="border p-2">No</th>
-                <th className="border p-2">Name</th>
-                <th className="border p-2">Attendance</th>
-                <th className="border p-2">Participation</th>
-                <th className="border p-2">Project</th>
-                <th className="border p-2">Quiz</th>
-                <th className="border p-2">Final Exam</th>
-                <th className="border p-2">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student, index) => {
-                const studentMarks = marks[student.id] || {};
-                const totalMarks =
-                  (studentMarks.behavior || 0) +
-                  (studentMarks.participation || 0) +
-                  (studentMarks.workingQuiz || 0) +
-                  (studentMarks.project || 0) +
-                  (studentMarks.finalExam || 0);
+          <table className="min-w-full border-collapse border border-gray-200 text-sm">
+  <thead className="bg-main text-white">
+    <tr>
+      <th className="border p-2">No</th>
+      <th className="border p-2">Name</th>
+      {dynamicHeaders.map((header) => (
+        <th key={header} className="border p-2">
+          {header}
+        </th>
+      ))}
+      <th className="border p-2">Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {students.map((student, index) => (
+      <tr key={student.id} className=" text-gray-700 even:bg-gray-100">
+        <td className="border text-center p-2 bg-transparent">{index + 1}</td>
+        <td className="border text-center font-semibold p-2 bg-transparent">
+        <Link href={`/students/${student.id}/results`}>{student.name}</Link>
+        
+        
+        </td>
+        {dynamicHeaders.map((header) => {
+          const field = headerToDataKeyMap[header];
+          const maxValue = getMaxValues(selectedSubjectId ?? '')[field] || 0;
+          const markValue = marks[student.id]?.[field] ?? 0;
 
-                return (
-                  <tr key={student.id} className="hover:bg-[#d382a7]">
-                    <td className="border p-2">{index + 1}</td>
-                    <td className="border p-2 font-semibold">
-                      <Link href={`/students/${student.id}/results`}>{student.name}</Link>
-                    </td>
-                    <td className="border p-2 ">
-                      <input
-                        type="number"
-                        value={studentMarks.behavior || 0}
-                        onChange={(e) =>
-                          handleInputChange(student.id, 'behavior', Number(e.target.value))
-                        }
-                        className={getInputClass(studentMarks.behavior, 'behavior')}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="number"
-                        value={studentMarks.participation || 0}
-                        onChange={(e) =>
-                          handleInputChange(student.id, 'participation', Number(e.target.value))
-                        }
-                        className={getInputClass(studentMarks.participation, 'participation')}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="number"
-                        value={studentMarks.project || 0}
-                        onChange={(e) =>
-                          handleInputChange(student.id, 'project', Number(e.target.value))
-                        }
-                        className={getInputClass(studentMarks.project, 'project')}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="number"
-                        value={studentMarks.workingQuiz || 0}
-                        onChange={(e) =>
-                          handleInputChange(student.id, 'workingQuiz', Number(e.target.value))
-                        }
-                        className={getInputClass(studentMarks.workingQuiz, 'workingQuiz')}
-                      />
-                    </td>
-                    <td className="border p-2">
-                      <input
-                        type="number"
-                        value={studentMarks.finalExam || 0}
-                        onChange={(e) =>
-                          handleInputChange(student.id, 'finalExam', Number(e.target.value))
-                        }
-                        className={getInputClass(studentMarks.finalExam, 'finalExam')}
-                      />
-                    </td>
-                    <td className="border p-2">{totalMarks}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          return (
+            <td key={header} className="border text-center p-2 bg-transparent">
+              <input
+                type="number"
+                value={markValue}
+                onChange={(e) =>
+                  handleInputChange(student.id, field, Number(e.target.value) || 0)
+                }
+                max={maxValue}
+                className={`${
+                  markValue < maxValue * 0.66 ? 'bg-red-200' : 'bg-transparent'
+                } w-full text-center `}
+              />
+            </td>
+          );
+        })}
+        <td className="border text-center p-2">
+          {Object.values(marks[student.id] || {}).reduce(
+            (acc, value) => acc + (value || 0),
+            0
+          )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
           <div className="bg-red-50 p-2 my-2  grid-cols-3 hidden md:flex md:justify-between md:Px-8 md:pr-36">
             <p className="text-lg ">Teacher: {selectedTeacherEmail}</p>
             <p className="text-lg ">Class : {classes?.find((c) => c.class.id === selectedClassId)?.class.name}</p>

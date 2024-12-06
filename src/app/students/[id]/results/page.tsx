@@ -1,7 +1,7 @@
 import PrintButton from '@/app/_components/PrintButton';
 import { getStudentWithMarks } from '@/lib/actions';
 import Image from 'next/image';
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 
 export default async function StudentResultsPage({ params }: { params: { id: string } }) {
   const studentId = params.id;
@@ -15,6 +15,7 @@ export default async function StudentResultsPage({ params }: { params: { id: str
 
   const marksToView = marks.filter((mark) => mark.trimester === "First Trimester");
   console.log(studentData)
+   console.log(marksToView)
   // Check if the student has an unpaid expense
   // if (expenses === "unpaid") {
   //   return (
@@ -30,9 +31,11 @@ export default async function StudentResultsPage({ params }: { params: { id: str
   // }
 
   // Calculate the total marks and average
-  const totalMarksSum = marks.reduce((sum, mark) => sum + mark.totalMarks, 0);
-  const numberOfSubjects = marks.length;
+  const totalMarksSum = marksToView.reduce((sum, mark) => sum + mark.totalMarks, 0);
+  const numberOfSubjects = marksToView.length;
   const averagePercentage = (totalMarksSum / (numberOfSubjects * 100)) * 100;
+
+  
 
   const calculateGrade = (totalMarks: number) => {
     if (totalMarks >= 96) return "A+";
@@ -49,7 +52,36 @@ export default async function StudentResultsPage({ params }: { params: { id: str
     if (totalMarks >= 60) return "D-";
     return "Below B-";
   };
-
+  const getDynamicHeaders = (subjectName: string) => {
+    if (subjectName === 'Arabic' || subjectName === 'Social Arabic') {
+      return ['participation', 'behavior', 'project', 'classActivities', 'workingQuiz', 'finalExam'];
+    }
+  
+    if (subjectName === 'Islamic') {
+      return ['participation', 'behavior', 'reading', 'memorizing', 'oralTest', 'workingQuiz', 'finalExam'];
+    }
+  
+    return ['participation', 'behavior', 'workingQuiz', 'finalExam', 'project'];
+  };
+  const headerNameMapping = {
+    workingQuiz: "Quiz",
+    finalExam: "Exam",
+    behavior: "Homework",
+    classActivities: "Class Activities",
+    project: "Project",
+    participation: "Participation",
+  };
+  const getDisplayHeader = (header: string) => {
+    return headerNameMapping[header] || header; // Default to the original name if not mapped
+  };
+  const groupedMarks = marksToView.reduce((groups, mark) => {
+    const headers = getDynamicHeaders(mark.subject.name).join(); // Join headers to create a unique group key
+    if (!groups[headers]) {
+      groups[headers] = [];
+    }
+    groups[headers].push(mark);
+    return groups;
+  }, {});
   return (
     <div className="report-card relative ">
       <header className="report-header flex-col pt-24 flex items-center justify-center relative">
@@ -99,41 +131,53 @@ export default async function StudentResultsPage({ params }: { params: { id: str
             </thead>
           </table>
 
-          <div className='overflow-x-scroll'>
-            <table className="marks-table">
-              <thead>
-                <tr>
-                  <th>Subject</th>
-                  <th>Participation</th>
-                  <th>Behavior</th>
-                  <th>Quiz</th>
-                  <th>Project</th>
-                  <th>Exam</th>
-                  <th>Total Marks</th>
-                  <th>Grade</th>
-                </tr>
-              </thead>
-              <tbody>
-                {marksToView.map((mark) => {
-                  const { participation, behavior, workingQuiz, project, finalExam, totalMarks } = mark;
-                  const grade = calculateGrade(totalMarks ?? 0);
+          <div className='overflow-x-auto'>
+  {Object.entries(groupedMarks).map(([headerKey, subjects]) => {
+    const headers = headerKey.split(','); // Reconstruct headers array
+    return (
+      <div key={headerKey} className="overflow-x-auto sm:overflow-visible ">
+        <table
+  className={`marks-table w-full text-center border-collapse border border-gray-300 ${
+    headers.length > 5 ? "table-fixed" : "px-1"
+  }`}
+>
+  <thead>
+    <tr>
+      <th className="border border-gray-300 px-1 py-1 w-[12%]">Subject</th>
+      {headers.map((header) => (
+        <th
+          key={header}
+          className={`border border-gray-300 px-1 py-1 ${
+            headers.length > 5 ? "w-1/12" : "w-[10%]"
+          }`}
+        >
+          {getDisplayHeader(header)} {/* Use mapped header name here */}
+        </th>
+      ))}
+      <th className="border border-gray-300 px-2 py-1 w-1/12">Total</th>
+      <th className="border border-gray-300 px-2 py-1 w-1/12">Grade</th>
+    </tr>
+  </thead>
+  <tbody>
+    {subjects.map((mark) => (
+      <tr key={mark.id || mark.subject.name}>
+        <td className="border border-gray-300 px-2 py-1">{mark.subject.name}</td>
+        {headers.map((header) => (
+          <td key={header} className="border border-gray-300 px-2 py-1">
+            {mark[header] || "-"} {/* Directly access mark[header] */}
+          </td>
+        ))}
+        <td className="border border-gray-300 px-2 py-1">{mark.totalMarks}</td>
+        <td className="border border-gray-300 px-2 py-1">{calculateGrade(mark.totalMarks)}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+      </div>
+    );
+  })}
+</div>
 
-                  return (
-                    <tr key={mark.id}>
-                      <td>{mark.subject.name}</td>
-                      <td>{participation}</td>
-                      <td>{behavior}</td>
-                      <td>{workingQuiz}</td>
-                      <td>{project}</td>
-                      <td>{finalExam}</td>
-                      <td>{totalMarks}</td>
-                      <td>{grade}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
         </div>
       </Suspense>
 
