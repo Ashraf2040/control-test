@@ -37,8 +37,10 @@ const StudentFullReportPage = () => {
   const handlePrint = () => {
     window.print();
   };
+
+  console.log(reports)
   return (
-    <div className="p-6 my-24 mx-auto print:p-6 print:m-0">
+    <div className="p-6 my-24 mx-auto print:p-6 print:m-0 max-w-7xl">
       
 
       {/* Add the top box with student details */}
@@ -77,12 +79,19 @@ const StudentFullReportPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {reports.map((report, index) => (
          
-          <div key={index} className="border border-gray-300 rounded-lg p-6 shadow-lg even:bg-[#F1F0FF] odd:bg-[#FEFCE8]">
-            <h3 className="text-xl font-bold mb-4">Subject: {report.subject.name}</h3>
-            <p className="text-md mb-2"><strong>Teacher:</strong> {report.teacher.name}</p>
-            <p className="text-md mb-2"><strong>Status:</strong> {report.status || 'Not Provided'}</p>
-            <p className="text-md mb-2"><strong>Recommendations:</strong> {report.recommendations?.join(', ') || 'No Recommendations'}</p>
+          <div key={index} className="border border-gray-300 rounded-lg p-6 shadow-lg even:bg-[#F1F0FF] odd:bg-[#FEFCE8] ">
+            <div className="mb-4 flex items-center justify-around mx-auto">
+            <h3 className="text-xl font-bold mb-2">Subject: {report.subject.name}</h3>
+            <p className="text-lg mb-2 font-bold"><strong>Teacher : </strong> {report.teacher.name}</p>
+            </div>
+            <p className="text-xl mb-4"><strong>Status : </strong> <span className='font-bold underline'>{report.status || 'Not Provided'}</span></p>
+            <p className="text-md mb-2"><strong>Recommendations:</strong> {report.recommendations?.map((rec)=> <li>{rec}</li>) || 'No Recommendations'}</p>
             <p className="text-md"><strong>Comment:</strong> {report.comment || 'No Comment Provided'}</p>
+           <div className='flex items-center justify-between mt-4 w-4/5 '>
+           <p className="text-md"><strong>Quiz : </strong> {report.quizScore || 'N/A'}</p>
+           <p className="text-md"><strong>Project : </strong> {report.projectScore || 'N/A'}</p>
+           <p className="text-md"><strong>Signature:</strong> </p>
+           </div>
           </div>
          
         ))}

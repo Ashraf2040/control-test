@@ -29,7 +29,10 @@ const StudentsProgress: React.FC = () => {
   const [reportFormData, setReportFormData] = useState({
     presentStatus: '',
     recommendations: [],
-    comment: '', // Add comment field here
+    comment: '',
+    quizMark: '',
+    projectMark: '',
+    // Add comment field here
   });
 
   useEffect(() => {
@@ -62,7 +65,7 @@ const StudentsProgress: React.FC = () => {
 
   const handleAddReport = (student: Student) => {
     setSelectedStudent(student);
-    setReportFormData({ presentStatus: '', recommendations: [], comment: '' }); // Reset the form
+    setReportFormData({ presentStatus: '', recommendations: [], comment: '', quizMark: '', projectMark: '' }); // Reset the form
   };
 
   const handleSaveReport = async () => {
@@ -214,7 +217,38 @@ const StudentsProgress: React.FC = () => {
                   placeholder="Add a comment"
                 />
               </div>
-
+  <div className='flex gap-4 text-center'>
+  <div className="mt-4">
+                <label className="block font-bold mb-2">Quiz Mark:</label>
+                <input
+                  type="number"
+                  value={reportFormData.quizMark}
+                  onChange={(e) =>
+                    setReportFormData((prev) => ({
+                      ...prev,
+                      quizMark: e.target.value,
+                    }))
+                  }
+                  className="w-full border p-2 rounded"
+                  placeholder="Enter quiz mark"
+                />
+   </div>
+   <div className="mt-4">
+                <label className="block font-bold mb-2">Project Mark :</label>
+                <input
+                  type="number"
+                  value={reportFormData.projectMark}
+                  onChange={(e) =>
+                    setReportFormData((prev) => ({
+                      ...prev,
+                      projectMark: e.target.value,
+                    }))
+                  }
+                  className="w-full border p-2 rounded"
+                  placeholder="Enter quiz mark"
+                />
+   </div>
+  </div>
               <button
                 type="button"
                 onClick={handleSaveReport}

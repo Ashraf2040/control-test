@@ -51,10 +51,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Report already exists for this student, subject, teacher, and trimester.' }, { status: 400 });
     }
 
-    // Extract report data
-    const { presentStatus, recommendations, comment } = report;
+    // Extract report data and marks
+    const { presentStatus, recommendations, comment, quizMark, projectMark } = report;
 
-    // Save the student report
+    // Save the student report, including quizMark and projectMark
     const savedReport = await prisma.studentReport.create({
       data: {
         studentId,
@@ -66,6 +66,8 @@ export async function POST(req: NextRequest) {
         status: presentStatus || 'Not Started',  // Default to 'Not Started' if missing
         recommendations: recommendations || [],   // Default to empty array if missing
         comment: comment || '',                   // Default to empty string if missing
+        quizScore: quizMark ? parseInt(quizMark) : null,  // Convert to integer if provided
+        projectScore: projectMark ? parseInt(projectMark) : null, // Convert to integer if provided
       },
     });
 

@@ -16,7 +16,9 @@ export async function GET(
         trimester: true,
         status: true,             // Fetch status
         recommendations: true,    // Fetch recommendations (array of strings)
-        comment: true,            // Fetch comment
+        comment: true, 
+        quizScore: true,
+        projectScore: true,           // Fetch comment
         createdAt: true,          // Fetch the creation date of the report
         student: {
           select: {
