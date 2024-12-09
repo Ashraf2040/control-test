@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const data = await request.json();
     console.log('Received data:', data);
 
-    const { name, email, password, academicYear, subjectClassAssignments ,school} = data;
+    const { name, email, password, academicYear,signature, subjectClassAssignments ,school} = data;
 
     if (!Array.isArray(subjectClassAssignments)) {
       return NextResponse.json({ error: 'subjectClassAssignments must be an array' }, { status: 400 });
@@ -21,6 +21,7 @@ export async function POST(request: Request) {
         password,
         school,
         academicYear,
+        signature,
       },
     });
 

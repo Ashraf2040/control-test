@@ -18,6 +18,7 @@ model Teacher {
   classes      ClassTeacher[]
   reports      StudentReport[]
   subjects     SubjectTeacher[]
+   signature    String?
 }
 
 model GlobalSettings {

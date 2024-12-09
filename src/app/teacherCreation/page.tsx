@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState ,useRef} from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-
+import SignatureCanvas from 'react-signature-canvas';
 const TeacherCreation = () => {
   const router = useRouter();
 
@@ -12,8 +12,9 @@ const TeacherCreation = () => {
     email: '',
     password: '123456789',
     academicYear: '',  // Changed to use select box
-    subjectClassAssignments: [] as { subjectId: string; classId: string }[],  // New structure to hold subject-class pairs
-    school: ''  // Added school field
+    subjectClassAssignments: [] as { subjectId: string; classId: string }[],  
+    school: '' , 
+    signature: null,
   });
 
   const [subjects, setSubjects] = useState([]);
@@ -105,7 +106,32 @@ const TeacherCreation = () => {
   const returnToHome = () => {
     router.push('/admin');
   };
+  // const handleSignatureUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       setTeacherData((prev) => ({ ...prev, signature: reader.result }));
+  //     };
+  //     reader.readAsDataURL(file); // Convert image to Base64 string
+  //   }
+  // };
+  const signatureRef = useRef<SignatureCanvas | null>(null);
+  const handleClearSignature = () => {
+    signatureRef.current.clear();
+    setTeacherData((prev) => ({ ...prev, signature: '' }));
+  };
 
+  const handleSaveSignature = () => {
+    const signature = signatureRef.current.toDataURL(); // Capture as Base64 string
+    setTeacherData((prev) => ({ ...prev, signature }));
+  };
+
+  // const handleSubmitSignature = async (e) => {
+  //   e.preventDefault();
+  //   // Add your submit logic here
+  //   console.log('Submitted Data:', teacherData);
+  // };
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-20 relative">
       <button className="absolute flex items-center justify-center right-1 top-1 text-white font-bold bg-main px-2 rounded text-lg" onClick={returnToHome}>x</button>
@@ -214,6 +240,7 @@ const TeacherCreation = () => {
               Add Subject-Class Pair
             </button>
           </div>
+          
         )}
 
         {/* Show Assigned Subject-Class Pairs */}
@@ -225,7 +252,32 @@ const TeacherCreation = () => {
             </p>
           ))}
         </div>
-
+        <div>
+        <label className="block text-lg font-medium text-gray-700">Signature:</label>
+        <SignatureCanvas
+          ref={signatureRef}
+          penColor="black"
+          canvasProps={{
+            className: 'border border-gray-300 rounded-md w-full h-40',
+          }}
+        />
+        <div className="mt-2 flex gap-4">
+          <button
+            type="button"
+            onClick={handleSaveSignature}
+            className="p-3 bg-blue-500 text-white rounded-md"
+          >
+            Save Signature
+          </button>
+          <button
+            type="button"
+            onClick={handleClearSignature}
+            className="p-3 bg-red-500 text-white rounded-md"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
         <button
           type="submit"
           className="mt-4 w-full py-3 px-6 bg-main text-white font-semibold rounded-md shadow-lg"

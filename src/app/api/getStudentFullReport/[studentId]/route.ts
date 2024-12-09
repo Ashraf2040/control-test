@@ -32,7 +32,8 @@ export async function GET(
         },
         teacher: {
           select: {
-            name: true,           // Fetch teacher name
+            name: true,  
+            signature: true,         // Fetch teacher name
           },
         },
         class: {

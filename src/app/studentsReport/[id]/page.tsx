@@ -76,22 +76,27 @@ const StudentFullReportPage = () => {
       </div>
 
       {/* Student reports */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
         {reports.map((report, index) => (
          
           <div key={index} className="border border-gray-300 rounded-lg p-6 shadow-lg even:bg-[#F1F0FF] odd:bg-[#FEFCE8] ">
-            <div className="mb-4 flex items-center justify-around mx-auto">
+            <div className="mb-4 flex items-center justify-around mx-auto relative">
             <h3 className="text-xl font-bold mb-2">Subject: {report.subject.name}</h3>
             <p className="text-lg mb-2 font-bold"><strong>Teacher : </strong> {report.teacher.name}</p>
             </div>
             <p className="text-xl mb-4"><strong>Status : </strong> <span className='font-bold underline'>{report.status || 'Not Provided'}</span></p>
             <p className="text-md mb-2"><strong>Recommendations:</strong> {report.recommendations?.map((rec)=> <li>{rec}</li>) || 'No Recommendations'}</p>
             <p className="text-md"><strong>Comment:</strong> {report.comment || 'No Comment Provided'}</p>
-           <div className='flex items-center justify-between mt-4 w-4/5 '>
-           <p className="text-md"><strong>Quiz : </strong> {report.quizScore || 'N/A'}</p>
-           <p className="text-md"><strong>Project : </strong> {report.projectScore || 'N/A'}</p>
-           <p className="text-md"><strong>Signature:</strong> </p>
+           <div className='flex items-center justify-between mt-4  '>
+           <p className="text-md"><strong>Quiz : </strong><span className='font-bold'>{report.quizScore || 'N/A'}</span> </p>
+           <p className="text-md"><strong>Project : </strong> <span className='font-bold'>{report.projectScore || 'N/A'}</span></p>
+           <p className="     flex items-center justify-center  ">
+         <span>   <strong>Signature: </strong></span>
+           <Image src={report.teacher.signature || ""} alt="signature" width={100} height={100} className=' h-12 w-32     ' />
+            </p>
+            
            </div>
+          
           </div>
          
         ))}
