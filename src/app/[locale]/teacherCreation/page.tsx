@@ -15,6 +15,7 @@ const TeacherCreation = () => {
     subjectClassAssignments: [] as { subjectId: string; classId: string }[],  
     school: '' , 
     signature: null,
+    arabicName: '',
   });
 
   const [subjects, setSubjects] = useState([]);
@@ -145,6 +146,17 @@ const TeacherCreation = () => {
             type="text"
             name="name"
             value={teacherData.name}
+            onChange={handleChange}
+            required
+            className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-lg font-medium text-gray-700">Arabic Name:</label>
+          <input
+            type="text"
+            name="arabicName"
+            value={teacherData.arabicName}
             onChange={handleChange}
             required
             className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"

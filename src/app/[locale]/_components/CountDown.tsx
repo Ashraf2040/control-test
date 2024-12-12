@@ -1,3 +1,4 @@
+import { useLocale } from 'next-intl';
 import React, { useEffect, useState } from 'react';
 
 interface CountdownProps {
@@ -31,7 +32,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, onCountdownEnd }) => 
 
     return () => clearInterval(interval); // Cleanup on unmount
   }, [targetDate, onCountdownEnd]);
-
+const locale =useLocale();
   const formatTime = (time: number) => {
     const days = Math.floor(time / (1000 * 60 * 60 * 24));
     const hours = Math.floor((time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -47,7 +48,7 @@ const Countdown: React.FC<CountdownProps> = ({ targetDate, onCountdownEnd }) => 
 
   return (
     <div className="text-md md:text-2xl md:font-semibold gap-2 text-red-500 flex items-center">
-      <h1 className="md:text-xl font-bold text-main">Time Left:</h1>
+      <h1 className="md:text-xl font-bold text-main">{`${locale === 'en' ? 'Time Left' : 'ينتهي إدخال الدرجات في :'}`}</h1>
       <div>
         {days < 10 ? `0${days}` : days}:
         {hours < 10 ? `0${hours}` : hours}:

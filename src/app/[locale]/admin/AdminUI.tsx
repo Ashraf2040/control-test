@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getTeachersProgress } from '@/lib/actions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface AdminUIProps {
   subjects: Subject[];
@@ -16,6 +17,7 @@ interface Teacher {
   id: string;
   email: string;
   name: string;
+  arabicName: string;
 }
 
 interface LocalStudent {
@@ -34,6 +36,7 @@ interface LocalStudent {
 }
 
 const headerToDataKeyMap: { [key: string]: keyof LocalStudent } = {
+  
   'Class Activities': 'classActivities',
   'Quiz': 'workingQuiz', // Changed from 'Working Quiz' to 'Quiz'
   'Exam': 'finalExam', // Changed from 'Final Exam' to 'Exam'
@@ -196,9 +199,11 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
     setSelectedTeacherId(teacherId);
 
     const selectedTeacher = teachers.find((teacher) => teacher.id === teacherId);
-    if (selectedTeacher) {
+    if (selectedTeacher && locale === 'en') {
       setSelectedTeacherEmail(selectedTeacher.name);
       console.log(selectedTeacher);
+    }else if (selectedTeacher && locale === 'ar'){
+      setSelectedTeacherEmail(selectedTeacher.arabicName)
     }
 
     const classesData = await fetchClasses(teacherId);
@@ -279,14 +284,17 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   };
 
   const dynamicHeaders = getDynamicHeaders()
-
+   const t= useTranslations('admin');
   console.log(students);
+
+  const locale = useLocale();
   return (
     <div className="w-full mx-auto p-6 pt-24 bg-white rounded-lg shadow-lg">
       <div className='flex justify-between items-center mb-3 flex-wrap print:hidden gap-2 '>
       {/* <h1  className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2">Admin Dashboard
       </h1> */}
-      <h1  className="text-main w-full md:max-w-fit md:text-xl  text-center rounded px-4 py-2 font-bold mb-2"> <span className='bg-main  p-1 rounded-md text-white'><span className='md:text-xl font-bold'>1</span>st</span> Trimester Data Entray <span className='text-[#e16262]'>(2024-2025)</span> 
+      <h1  className="text-main w-full md:max-w-fit md:text-xl  text-center rounded px-4 py-2 font-bold mb-2">{ locale=== 'en' ? t("1st"):"" } {t('Trimester Data Entray')} { locale=== 'ar' ? t("1st"):"" } <span className='text-[#e16262]'> 
+          (2024-2025)</span> 
       </h1>
 
       <div className='flex flex-wrap  gap-2 w-full md:w-fit'>
@@ -295,20 +303,20 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
         className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
         onClick={() => router.push('/teacherCreation')}
       >
-        Create New Teacher
+        {t('Create Teacher')}
       </button>
       <button
   className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
   onClick={() => router.push('/teacherProgress')}
 >
-  Show Teacher Progress
+  {t('Teacher Management')}
 </button>
 
 <button
   className="text-white w-full md:max-w-fit bg-main text-center rounded px-4 py-2 font-semibold mb-2"
   onClick={() => router.push('/studentsManage')}
 >
- Students Management
+ {t('Student Management')}
 </button>
 
 </div>
@@ -348,7 +356,7 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
     )}
       </div>
 
-      <div className="my-6 mx-auto   text-main font-semibold px-1 md:px-8 py-2  print:hidden flex w-fit gap-2 md:gap-12 lg:gap-24 flex-wrap justify-center items-center  ">
+      <div className="my-6 mx-auto   text-main font-semibold px-1 md:px-8 py-2  print:hidden flex w-fit gap-2 md:gap-12 lg:gap-20 flex-wrap justify-center items-center  ">
       <div className='flex w-full md:w-fit bg-main rounded  gap-2 items-center justify-center'>
       {/* <h2 className="text-xl font-semibold ">Select Academic Year</h2> */}
   <select
@@ -357,7 +365,7 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
     defaultValue=""
   >
     <option value="" disabled>
-      Select an academic year
+     {t('selectAcademicYear')}
     </option>
     <option value="2024-2025">2024-2025</option>
     <option value="2025-2026">2025-2026</option>
@@ -373,16 +381,16 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   <div className="print:hidden flex w-full  md:w-fit ">
     {/* <h2 className="text-xl font-semibold ">Select Trimester</h2> */}
     <select
-      className="border rounded p-3 w-full  focus:outline-none focus:ring-2 focus:ring-[#5C2747]"
+      className="border rounded p-3 w-full md:w-fit  focus:outline-none focus:ring-2 focus:ring-[#5C2747]"
       onChange={(e) => setSelectedTrimester(e.target.value)}
       defaultValue=""
     >
-      <option value="" disabled>
-        Select a trimester
+      <option value="" disabled className='max-w-fit'>
+        {t('selectTrimester')}
       </option>
-      <option value="First Trimester">First Trimester</option>
-      <option value="Second Trimester">Second Trimester</option>
-      <option value="Third Trimester">Third Trimester</option>
+      <option value="First Trimester">{t('First Trimester')}</option>
+      <option value="Second Trimester">{t('Second Trimester')}</option>
+      <option value="Third Trimester">{t('Third Trimester')}</option>
     </select>
   </div>
 )}
@@ -395,11 +403,11 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
             defaultValue=""
           >
             <option value="" disabled>
-              Select a subject
+             {t('selectSubject')}
             </option>
             {subjects.map((subject) => (
               <option key={subject.id} value={subject.id} >
-                {subject.name}
+                {locale === 'en' ? subject.name : subject.arabicName}
               </option>
             ))}
           </select>
@@ -414,11 +422,11 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
             defaultValue=""
           >
             <option value="" disabled>
-              Select a teacher
+             {t('selectTeacher')}
             </option>
             {teachers.map((teacher: Teacher) => (
               <option key={teacher.id} value={teacher.id}>
-                {teacher.name}
+                {locale === 'en' ? teacher.name :teacher.arabicName}
               </option>
             ))}
           </select>
@@ -434,7 +442,7 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
             defaultValue=""
           >
             <option value="" disabled>
-              Select a class
+             {t('selectClass')}
             </option>
             {classes.map((classItem) => (
               <option key={classItem.id} value={classItem.class.id}>
@@ -454,14 +462,14 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
           <table className="min-w-full border-collapse border border-gray-200 text-sm">
   <thead className="bg-main text-white">
     <tr>
-      <th className="border p-2">No</th>
-      <th className="border p-2">Name</th>
+      <th className="border p-2">{t('no')}</th>
+      <th className="border p-2">{t('name')}</th>
       {dynamicHeaders.map((header) => (
         <th key={header} className="border p-2">
-          {header}
+          {t(`${header}`)}
         </th>
       ))}
-      <th className="border p-2">Total</th>
+      <th className="border p-2">{t('total')}</th>
     </tr>
   </thead>
   <tbody>
@@ -469,7 +477,7 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
       <tr key={student.id} className=" text-gray-700 even:bg-gray-100">
         <td className="border text-center p-2 bg-transparent">{index + 1}</td>
         <td className="border text-center font-semibold p-2 bg-transparent">
-        <Link href={`/students/${student.id}/results`}>{student.name}</Link>
+        <Link href={`/students/${student.id}/results`}>{locale === 'en' ? student.name : student.arabicName}</Link>
         
         
         </td>
@@ -505,20 +513,20 @@ const AdminUI: React.FC<AdminUIProps> = ({ subjects }) => {
   </tbody>
 </table>
 
-          <div className="bg-red-50 p-2 my-2  grid-cols-3 hidden md:flex md:justify-between md:Px-8 md:pr-36">
-            <p className="text-lg ">Teacher: {selectedTeacherEmail}</p>
-            <p className="text-lg ">Class : {classes?.find((c) => c.class.id === selectedClassId)?.class.name}</p>
-            <p className="text-lg ">Signature :</p>
+          <div className={`bg-gray-100 p-2 my-2 font-semibold grid-cols-3 hidden md:flex md:justify-between md:Px-8 ${locale === 'en' ? 'md:pr-36 lg:pr-64' : 'md:pl-36 lg:pl-64'}`}>
+            <p className="text-lg ">{locale === 'en' ? 'Teacher: ' : 'اسم المعلم :'} {selectedTeacherEmail}</p>
+            <p className="text-lg ">{locale === 'en' ? 'Class : ' : 'الفصل :'}  {classes?.find((c) => c.class.id === selectedClassId)?.class.name}</p>
+            <p className="text-lg ">{locale === 'en' ? 'Signature : ' : 'التوقيع :'}  </p>
           </div>
-          <div className="mt-2 flex justify-end print:hidden">
+          <div className="mt-2 flex gap-4 justify-end print:hidden">
     <button
       className="py-2 px-4 bg-main text-white rounded mr-2"
       onClick={handleSaveMarks}
     >
-      Save Marks
+      {locale === 'en' ? 'Save Marks' :'حفظ الدرجات'}
     </button>
     <button className="py-2 px-4 bg-main text-white rounded" onClick={handlePrintCertificate}>
-      Print Certificate
+      {locale==='en' ? 'Print ' : 'طباعة'}
     </button>
   </div>
         </div>

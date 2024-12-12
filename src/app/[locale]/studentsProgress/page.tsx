@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'; // Import useSearchParams
 import toast from 'react-hot-toast';
 import 'react-toastify/dist/ReactToastify.css';
 import { revalidatePath } from 'next/cache';
+import { useLocale, useTranslations } from 'next-intl';
 interface Student {
   id: string;
   name: string;
@@ -105,40 +106,45 @@ const StudentsProgress: React.FC = () => {
   };
   
   
-
+const locale =useLocale();
   console.log(students);
-
+const t = useTranslations('Progress');
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
       <h1 className="text-2xl font-bold mb-4 text-center">
-        Students Progress Report - {className}
+     {t('studentsProgressReport')}  -  {className}
       </h1>
       <table className="min-w-full bg-white shadow-lg rounded-lg border">
         <thead className="bg-gray-200">
           <tr>
-            <th className="p-3 text-left">No</th>
-            <th className="p-3 text-left">Student Name</th>
-            <th className="p-3 text-left">Class</th>
-            <th className="p-3 text-left">Trimester</th>
-            <th className="p-3 text-left">Report</th>
+            <th className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{t('no')} </th>
+            <th className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}> {t('name')}</th>
+            <th className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{t('class')}</th>
+            <th className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{t('trimester')}</th>
+            <th className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{t('report')}</th>
           </tr>
         </thead>
         <tbody>
         {students.map((student, index) => (
   <tr key={student.id} className="even:bg-gray-200 odd:bg-gray-100">
-    <td className="p-3">{index + 1}</td>
-    <td className="p-3">{student.name}</td> {/* Render the name of the student */}
-    <td className="p-3">{student.class?.name}</td> {/* Assuming class is an object */}
-    <td className="p-3">{trimester}</td>
-    <td className="p-3">
+    <td className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{index + 1}</td>
+    <td className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{ locale==="en" ? student.name : student.arabicName}</td> {/* Render the name of the student */}
+    <td className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>{student.class?.name}</td> {/* Assuming class is an object */}
+    <td className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>
+      
+      {t(`${trimester}`)}
+      
+      
+      </td>
+    <td className={`p-3 ${locale==="en" ? 'text-left':'text-right'}`}>
   {student.reportStatus === 'Done' ? (
-    <h1 className=" text-green-700 font-bold ">Done</h1>
+    <h1 className=" text-green-700 font-bold ">{t('done')}</h1>
   ) : (
     <button
       onClick={() => handleAddReport(student)}
       className="bg-main hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
     >
-      Add Report
+     {t('addReport')}
     </button>
   )}
 </td>
@@ -149,12 +155,13 @@ const StudentsProgress: React.FC = () => {
       </table>
 
       {selectedStudent && (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-          <div className="bg-white p-6 rounded shadow-lg">
-            <h2 className="text-xl font-bold mb-4">Add Report for {selectedStudent.name}</h2>
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center ">
+          <div className="bg-white p-6 rounded shadow-lg w-2/5">
+            <h2 className="text-xl font-bold mb-4">
+              {locale==="en" ? 'Add Report for' : 'إضافة تقرير لـ'} {locale==="en" ? selectedStudent.name : selectedStudent.arabicName}</h2>
             <form>
               <div>
-                <label className="block font-bold mb-2">Present Status:</label>
+                <label className="block font-bold mb-2">{t('presentStatus')}:</label>
                 <select
                   value={reportFormData.presentStatus}
                   onChange={(e) =>
@@ -165,19 +172,19 @@ const StudentsProgress: React.FC = () => {
                   }
                   className="w-full border p-2 rounded"
                 >
-                  <option value="">-- Select --</option>
-                  <option value="Excellent">Excellent</option>
-                  <option value="Good">Good</option>
-                  <option value="Average">Average</option>
-                  <option value="Below Average">Below Average</option>
+                  <option value="">{t('select')}</option>
+                  <option value="Excellent">{t('excellent')}</option>
+                  <option value="Good">{t('good')}</option>
+                  <option value="Average">{t('average')}</option>
+                  <option value="Below Average">{t('belowAverage')}</option>
                 </select>
               </div>
 
-              <div className="mt-4">
-                <label className="block font-bold mb-2">Recommendations:</label>
-                <div>
-                  {['Continued Good Work', 'Better Written Work', 'More Serious Approach', 'Increased Preparation and Study', 'Increased Class Participation', 'Additional Help Needed'].map((rec) => (
-                    <div key={rec} className="mb-2">
+              <div className="mt-4 ">
+                <label className="block font-bold mb-2">{t('recommendations')}:</label>
+                <div className='flex  flex-wrap items-center justify-between'>
+                  {[`${t('continuedGoodWork')}`, `${t('betterWrittenWork')}`, `${t('moreSeriousApproach')}`, `${t('increasedPreparationAndStudy')}`, `${t('increasedClassParticipation')}`, `${t('additionalHelpNeeded')}`].map((rec) => (
+                    <div key={rec} className="mb-2 ">
                       <label>
                         <input
                           type="checkbox"
@@ -192,7 +199,7 @@ const StudentsProgress: React.FC = () => {
                               recommendations: newRecs,
                             }));
                           }}
-                          className="mr-2"
+                          className={locale==="en" ? 'mr-2' : 'ml-2'}
                         />
                         {rec}
                       </label>
@@ -203,7 +210,7 @@ const StudentsProgress: React.FC = () => {
 
               {/* Add comment textarea */}
               <div className="mt-4">
-                <label className="block font-bold mb-2">Comment:</label>
+                <label className="block font-bold mb-2">{t('comment')}:</label>
                 <textarea
                   value={reportFormData.comment}
                   onChange={(e) =>
@@ -214,12 +221,12 @@ const StudentsProgress: React.FC = () => {
                   }
                   className="w-full border p-2 rounded"
                   rows={4}
-                  placeholder="Add a comment"
+                  placeholder={locale==="en" ? 'add comment' : 'كتابة تعليق'}
                 />
               </div>
-  <div className='flex gap-4 text-center'>
+  <div className='flex gap-4 '>
   <div className="mt-4">
-                <label className="block font-bold mb-2">Quiz Mark:</label>
+                <label className="block font-bold mb-2">{t('quizMark')} :</label>
                 <input
                   type="number"
                   value={reportFormData.quizMark}
@@ -230,11 +237,11 @@ const StudentsProgress: React.FC = () => {
                     }))
                   }
                   className="w-full border p-2 rounded"
-                  placeholder="Enter quiz mark"
+                  placeholder={locale==="en" ? 'Enter quiz mark' : 'درجة الاختبار'}
                 />
    </div>
    <div className="mt-4">
-                <label className="block font-bold mb-2">Project Mark :</label>
+                <label className="block font-bold mb-2">{t('projectMark')} :</label>
                 <input
                   type="number"
                   value={reportFormData.projectMark}
@@ -245,7 +252,7 @@ const StudentsProgress: React.FC = () => {
                     }))
                   }
                   className="w-full border p-2 rounded"
-                  placeholder="Enter quiz mark"
+                  placeholder={locale==="en" ? 'Enter project mark' : 'درجة المشروع'}
                 />
    </div>
   </div>
@@ -254,7 +261,7 @@ const StudentsProgress: React.FC = () => {
                 onClick={handleSaveReport}
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4"
               >
-                Save Report
+                {t('saveReport')}
               </button>
             </form>
           </div>

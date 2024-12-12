@@ -10,6 +10,7 @@ datasource db {
 model Teacher {
   id           String           @id @default(uuid())
   name         String
+  arabicName   String
   email        String           @unique
   password     String
   role         Role             @default(TEACHER)
@@ -56,6 +57,8 @@ model Student {
 model Subject {
   id       String           @id @default(uuid())
   name     String
+  arabicName   String
+
   classes  ClassSubject[]
   marks    Mark[]
   reports  StudentReport[]  @relation("subjectReports")

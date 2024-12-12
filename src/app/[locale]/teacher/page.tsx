@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Class, Student, Teacher } from '@prisma/client';
 import toast, { Toaster } from 'react-hot-toast';
-import Countdown from '../_components/CountDown';
-import CountdownWrapper from '../_components/CountdownWrapper';
+
+
 import { useRouter } from 'next/navigation';
+import CountdownWrapper from '../_components/CountdownWrapper';
+import { useLocale, useTranslations } from 'next-intl';
+
 
 interface Mark {
   id: string;
@@ -286,7 +289,7 @@ console.log(trimester)
         throw new Error('Failed to update marks');
       }
 
-      toast.success('Marks updated successfully!');
+      toast.success(`${locale === 'en' ? 'Marks updated successfully!' : 'تم حفظ الدرجات بنجاح'} `);
     } catch (error) {
       console.error(error);
       toast.error('Error updating marks. Please try again.');
@@ -354,152 +357,171 @@ const tableHeaders = () => {
     return ['participation', 'behavior', 'workingQuiz','project', 'finalExam', ];
   }
 };
-
+const locale = useLocale()
+ const t = useTranslations('teacher')
   return (
     <div className="mx-auto pt-24 p-6 min-h-screen">
       <Toaster position="top-right" />
-      <div className='flex items-center justify-between mx-auto shadow-lg mb-4 px-4 flex-wrap'>
-      <h1 className="text-lg py-2 font-bold bg-main md:w-fit w-full text-center text-white md:py-1 px-4 my-6 rounded-md">Hello, {teacherDetails?.name}</h1>
-      <p className=' md:text-xl font-bold text-main mb-2'>Subject : <span className='text-red-500'>{currentTeacher?.subjects[0]?.subject.name}</span></p>
-      <h2 className='mb-2'>
-        
-      <CountdownWrapper onCountdownEnd={handleCountdownEnd} />
-      </h2>
-      </div>
-     <div className='flex my-4 justify-center text-main font-semibold gap-4 md:gap-8 lg:gap-12  items-center flex-wrap'>
-     
-      <div className=" w-full md:w-fit">
-        {/* <label htmlFor="academicYear" className="block text-lg">Select Academic Year:</label> */}
-        <select
-          id="academicYear"
-          value={academicYear}
-          onChange={(e) => setAcademicYear(e.target.value)}
-          className="border p-2 rounded w-full"
-        >
-          <option value="">-- Select Academic Year --</option>
-          {academicYears.map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
+      <div className="flex items-center justify-between mx-auto shadow-lg mb-4 px-4 flex-wrap">
+        <h1 className="text-lg py-2 font-bold bg-main md:w-fit w-full text-center text-white md:py-1 px-4 my-6 rounded-md">
+          {t("greeting", { name: `${locale==="en"?`${teacherDetails?.name}`:`${teacherDetails?.arabicName}`}` })}
+        </h1>
+        <p className="md:text-xl font-bold text-main mb-2">
+          {t("subject")}: <span className="text-red-500">{locale==="en"?`${currentTeacher?.subjects[0]?.subject.name}`:`${currentTeacher?.subjects[0]?.subject.arabicName}`}</span>
+        </p>
+        <h2 className="mb-2">
+          <CountdownWrapper onCountdownEnd={handleCountdownEnd} />
+        </h2>
       </div>
 
-      <div className="w-full md:w-fit">
-      
-        <select
-          id="trimester"
-          value={trimester}
-          onChange={(e) => setTrimester(e.target.value)}
-          className="border p-2 rounded w-full"
-        >
-          <option value="">-- Select Trimester --</option>
-          {trimesters.map((trimesterOption) => (
-            <option key={trimesterOption} value={trimesterOption}>
-              {trimesterOption}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {currentTeacher?.subjects.length > 1 && (
-        <div className=" hidden ">
-          <label htmlFor="subjectSelect" className="block my-2 text-xl font-medium ">
-            Select Subject
-          </label>
-          <select
-            id="subjectSelect"
-            value={selectedSubject}
-            onChange={handleSubjectChange}
-            className="border border-lamaSky p-2 rounded w-full text-lg max-w-fit"
-          >
-            <option value="">-- Select a Subject --</option>
-            {currentTeacher.subjects.map((subject) => (
-              <option key={subject.id} value={subject.subjectId}>
-                {subject.subject.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
-      {selectedSubject && (
+      <div className="flex my-4 justify-center text-main font-semibold gap-4 md:gap-8 lg:gap-12 items-center flex-wrap">
         <div className="w-full md:w-fit">
-         
           <select
-            id="classSelect"
-            value={selectedClassId}
-            onChange={handleClassChange}
-            className="border  p-2 rounded w-full  "
+            id="academicYear"
+            value={academicYear}
+            onChange={(e) => setAcademicYear(e.target.value)}
+            className="border p-2 rounded w-full"
           >
-            <option value="">-- Select a Class --</option>
-            {currentTeacher.classes.map((classItem) => (
-              <option key={classItem.class.id} value={classItem.class.id}>
-                {classItem.class.name}
+            <option value="">{t("selectAcademicYear")}</option>
+            {academicYears.map((year) => (
+              <option key={year} value={year}>
+                {year}
               </option>
             ))}
           </select>
         </div>
-      )}
-     </div>
+
+        <div className="w-full md:w-fit">
+          <select
+            id="trimester"
+            value={trimester}
+            onChange={(e) => setTrimester(e.target.value)}
+            className="border p-2 rounded w-full"
+          >
+            <option value="">{t("selectTrimester")}</option>
+            {trimesters.map((trimesterOption) => (
+              <option key={trimesterOption} value={trimesterOption}>
+                {trimesterOption}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {currentTeacher?.subjects.length > 1 && (
+          <div className="hidden">
+            <label htmlFor="subjectSelect" className="block my-2 text-xl font-medium">
+              {t("selectSubject")}
+            </label>
+            <select
+              id="subjectSelect"
+              value={selectedSubject}
+              onChange={handleSubjectChange}
+              className="border border-lamaSky p-2 rounded w-full text-lg max-w-fit"
+            >
+              <option value="">{t("selectSubject")}</option>
+              {currentTeacher.subjects.map((subject) => (
+                <option key={subject.id} value={subject.subjectId}>
+                  {subject.subject.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {selectedSubject && (
+          <div className="w-full md:w-fit">
+            <select
+              id="classSelect"
+              value={selectedClassId}
+              onChange={handleClassChange}
+              className="border p-2 rounded w-full"
+            >
+              <option value="">{t("selectClass")}</option>
+              {currentTeacher.classes.map((classItem) => (
+                <option key={classItem.class.id} value={classItem.class.id}>
+                  {classItem.class.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
 
       {students.length > 0 && (
         <div className="overflow-x-scroll">
-         <div className='flex items-center justify-between'>
-         <h2 className="md:text-xl text-main font-bold my-4">Students in Class</h2>  <button
-        onClick={navigateToProgressReport}
-        className="bg-main hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
-      >
-        Students Progress Report
-      </button>
-         </div>
+          <div className="flex items-center justify-between">
+            <h2 className="md:text-xl text-main font-bold my-4">{t("studentsInClass")}</h2>
+            <button
+              onClick={navigateToProgressReport}
+              className="bg-main hover:bg-gray-600 text-white font-bold py-2 px-4 rounded"
+            >
+              {t("progressReport")}
+            </button>
+          </div>
           <table className="min-w-full bg-white shadow-lg rounded-lg border">
-          <thead className="bg-gray-200">
-  <tr>
-    <th className="p-3 text-center text-black">NO</th>
-    <th className="p-3 text-center text-black">Name</th>
-    {tableHeaders().map((field) => (
-      <th key={field} className="p-3 text-center text-black">
-        {/* Conditional display names for workingQuiz and finalExam */}
-        {field === 'workingQuiz' ? 'Quiz' : field === 'finalExam' ? 'Exam' : field === 'behavior' ? 'Homework' : field.charAt(0).toUpperCase() + field.slice(1)}
-        
-        <div className='mt-1 text-main'>
-        <button
-          onClick={() => fillAllMarks(field as keyof Mark)}
-          className="ml-2  hover:bg-gray-400 text-[14px] underline font-bold py-1 px-2 rounded ">
-          Fill
-        </button>
-        <button
-          onClick={() => resetAllMarks(field as keyof Mark)}
-          className="ml-2  hover:bg-gray-400 underline text-[14px] font-bold py-1 px-2 rounded "
-        >
-          Reset 
-        </button>
-        </div>
-      </th>
-    ))}
-    <th className="p-3 text-center text-black">Total</th>
-  </tr>
-</thead>
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="p-3 text-center text-black">{t("no")}</th>
+                <th className="p-3 text-center text-black">{t("name")}</th>
+                {tableHeaders().map((field) => (
+                  <th key={field} className="p-3 text-center text-black">
+                    {field === "workingQuiz"
+                      ? t("quiz")
+                      : field === "finalExam"
+                      ? t("exam")
+                      : field === "behavior"
+                      ? t("homework")
+                      : field === "participation"
+                      ? t("participation")
+                      : field === "project"
+                      ? t("project")
+                      : field === "memorizing"
+                      ? t("memorizing")
+                      : field === "oralTest"
+                      ? t("oralTest")
+                      : field === "reading"
+                      ? t("reading")
+                      : field === "classActivities"
+                      ? t("classActivities")
+                      
+                      : field.charAt(0).toUpperCase() + field.slice(1)}
+                    <div className="mt-1 text-main">
+                      <button
+                        onClick={() => fillAllMarks(field as keyof Mark)}
+                        className="ml-2 hover:bg-gray-400 text-[14px] underline font-bold py-1 px-2 rounded"
+                      >
+                        {t("fill")}
+                      </button>
+                      <button
+                        onClick={() => resetAllMarks(field as keyof Mark)}
+                        className="ml-2 hover:bg-gray-400 underline text-[14px] font-bold py-1 px-2 rounded"
+                      >
+                        {t("reset")}
+                      </button>
+                    </div>
+                  </th>
+                ))}
+                <th className="p-3 text-center text-black">{t("total")}</th>
+              </tr>
+            </thead>
 
             <tbody>
               {students.map((student, index) => {
-                const studentMarks = marks[student.id] || {};
                 return (
                   <tr key={student.id} className="even:bg-gray-200 odd:bg-gray-100">
-                  <td className="px-3">
-                    <span className="font-bold">{index + 1}</span>
-                  </td>
-                  <td className="text-[14px] font-bold">{student.name}</td>
-                  {tableHeaders().map((field) => (
-                      <td key={field} className="p-1">
-                      <input
-                        type="number"
-                        value={marks[student.id]?.[field as keyof Mark] || ''}
-                        onChange={(e) => handleMarkChange(student.id, field as keyof Mark, e.target.value)}
-                        className="w-full border border-gray-300 p-2 rounded"
-                      />
+                    <td className="px-3">
+                      <span className="font-bold">{index + 1}</span>
                     </td>
+                    <td className="text-[14px] font-bold">{locale==="en"?student.name:student.arabicName}</td>
+                    {tableHeaders().map((field) => (
+                      <td key={field} className="p-1">
+                        <input
+                          type="number"
+                          value={marks[student.id]?.[field as keyof Mark] || ""}
+                          onChange={(e) => handleMarkChange(student.id, field as keyof Mark, e.target.value)}
+                          className="w-full border border-gray-300 p-2 rounded"
+                        />
+                      </td>
                     ))}
                     <td className="p-3 text-center">{calculateTotalMarks(student.id)}</td>
                   </tr>
@@ -510,11 +532,10 @@ const tableHeaders = () => {
           <div className="m-2 mb-2 text-end">
             <button
               onClick={handleSaveMarks}
-              className=" bg-main hover:bg-lamaYellow text-white font-bold py-2 px-6 rounded shadow-lg  "
+              className="bg-main hover:bg-lamaYellow text-white font-bold py-2 px-6 rounded shadow-lg"
             >
-              Save Marks
+              {t("saveMarks")}
             </button>
-           
           </div>
         </div>
       )}

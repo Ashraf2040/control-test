@@ -27,13 +27,15 @@ export async function GET(
         },
         subject: {
           select: {
-            name: true,           // Fetch subject name
+            name: true,   
+            arabicName: true        // Fetch subject name
           },
         },
         teacher: {
           select: {
             name: true,  
-            signature: true,         // Fetch teacher name
+            signature: true,
+            arabicName: true         // Fetch teacher name
           },
         },
         class: {
