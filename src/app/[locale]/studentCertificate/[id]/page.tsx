@@ -1,7 +1,8 @@
-import PrintButton from '@/app/_components/PrintButton';
+
 import { getStudentWithMarks } from '@/lib/actions';
 import Image from 'next/image';
 import { Suspense } from 'react';
+import PrintButton from '../../_components/PrintButton';
 
 export default async function StudentResultsPage({ params }: { params: { id: string } }) {
   const studentId = params.id;

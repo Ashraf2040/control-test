@@ -1,4 +1,5 @@
-import PrintButton from '@/app/_components/PrintButton';
+
+import PrintButton from '@/app/[locale]/_components/PrintButton';
 import { getStudentWithMarks } from '@/lib/actions';
 import Image from 'next/image';
 import React, { Suspense } from 'react';
