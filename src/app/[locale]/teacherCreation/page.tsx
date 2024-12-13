@@ -4,6 +4,7 @@ import { useEffect, useState ,useRef} from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import SignatureCanvas from 'react-signature-canvas';
+import { useLocale, useTranslations } from 'next-intl';
 const TeacherCreation = () => {
   const router = useRouter();
 
@@ -133,15 +134,18 @@ const TeacherCreation = () => {
   //   // Add your submit logic here
   //   console.log('Submitted Data:', teacherData);
   // };
+
+  const t = useTranslations('teacherCreation');
+  const locale=useLocale();
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg mt-20 relative">
-      <button className="absolute flex items-center justify-center right-1 top-1 text-white font-bold bg-main px-2 rounded text-lg" onClick={returnToHome}>x</button>
-      <h1 className="text-2xl font-semibold text-center mb-6">Create New Teacher</h1>
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg my-10 relative">
+      <button className={`absolute flex items-center ${locale === 'ar' ? 'left-1' : 'right-1'}  top-1 text-white font-bold bg-main px-2 rounded-full text-lg`} onClick={returnToHome}>x</button>
+      <h1 className="text-2xl font-semibold text-center mb-6">{t('Create New Teacher')}</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* Basic Info */}
         <div>
-          <label className="block text-lg font-medium text-gray-700">Name:</label>
+          <label className="block text-lg font-medium text-gray-700">{t('name')} :</label>
           <input
             type="text"
             name="name"
@@ -152,7 +156,7 @@ const TeacherCreation = () => {
           />
         </div>
         <div>
-          <label className="block text-lg font-medium text-gray-700">Arabic Name:</label>
+          <label className="block text-lg font-medium text-gray-700">{t('Arabic Name')} :</label>
           <input
             type="text"
             name="arabicName"
@@ -163,7 +167,7 @@ const TeacherCreation = () => {
           />
         </div>
         <div>
-          <label className="block text-lg font-medium text-gray-700">Email:</label>
+          <label className="block text-lg font-medium text-gray-700">{t('Email')} :</label>
           <input
             type="email"
             name="email"
@@ -176,7 +180,7 @@ const TeacherCreation = () => {
 
         {/* Academic Year Select */}
         <div>
-          <label className="block text-lg font-medium text-gray-700">Academic Year:</label>
+          <label className="block text-lg font-medium text-gray-700">{t('Academic Year')}:</label>
           <select
             name="academicYear"
             value={teacherData.academicYear}
@@ -184,7 +188,7 @@ const TeacherCreation = () => {
             required
             className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="" disabled>Select an academic year</option>
+            <option value="" disabled>{t('selectAcademicYear')}</option>
             {academicYears.map((year) => (
               <option key={year} value={year}>
                 {year}
@@ -195,7 +199,7 @@ const TeacherCreation = () => {
 
         {/* Select School */}
         <div>
-          <label className="block text-lg font-medium text-gray-700">School:</label>
+          <label className="block text-lg font-medium text-gray-700">{t('school')}</label>
           <select
             name="school"
             value={teacherData.school}
@@ -203,26 +207,26 @@ const TeacherCreation = () => {
             required
             className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="" disabled>Select a school</option>
-            <option value="Alforqan School">Alforqan School</option>
-            <option value="Albatool Khaldia 1">Albatool Khaldia 1</option>
-            <option value="Albatool Khaldia 2">Albatool Khaldia 2</option>
-            <option value="Albatool Khaldia 3">Albatool Khaldia 3</option>
+            <option value="" disabled>{locale==="en"?"Select School":"اختر المدرسة"}</option>
+            <option value="Alforqan School">{locale==="en"?"Alforqan School":"الفرقان الأمريكي بالحمراء"}</option>
+            <option value="Albatool Khaldia 1">{locale==="en"?"Albatool Khaldia 1":"البتول خالدية 1"}</option>
+            <option value="Albatool Khaldia 2">{locale==="en"?"Albatool Khaldia 2":"البتول خالدية 2"}</option>
+            <option value="Albatool Khaldia 3">{locale==="en"?"Albatool Khaldia 3":"البتول خالدية 3"}</option>
           </select>
         </div>
 
         {/* Select Subject and Assign Class */}
         <div>
-          <label className="block text-lg font-medium text-gray-700">Subjects:</label>
+          <label className="block text-lg font-medium text-gray-700">{t('Subject')}:</label>
           <select
             onChange={(e) => setSelectedSubject(e.target.value)}
             value={selectedSubject || ""}
             className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="" disabled>Select a subject to assign</option>
+            <option value="" disabled>{t('Subject Class Assignments')}</option>
             {subjects.map((subject) => (
               <option key={subject.id} value={subject.id}>
-                {subject.name}
+                {locale==="en"?subject.name:subject.arabicName}
               </option>
             ))}
           </select>
@@ -231,13 +235,13 @@ const TeacherCreation = () => {
         {/* Select Class for the Selected Subject */}
         {selectedSubject && (
           <div>
-            <label className="block text-lg font-medium text-gray-700">Assign Class for Selected Subject:</label>
+            <label className="block text-lg font-medium text-gray-700">{locale==="en"?"Assign Class for Selected Subject :":"إختر الفصل للمادة المحددة"}</label>
             <select
               onChange={(e) => setSelectedClass(e.target.value)}
               value={selectedClass || ""}
               className="mt-2 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="" disabled>Select a class</option>
+              <option value="" disabled>{locale==="en"?"Select Class":"أختر الفصل"}</option>
               {classes.map((classItem) => (
                 <option key={classItem.id} value={classItem.id}>
                   {classItem.name}
@@ -249,7 +253,7 @@ const TeacherCreation = () => {
               onClick={handleAddSubjectClassPair}
               className="mt-2 p-3 bg-blue-500 text-white rounded-md"
             >
-              Add Subject-Class Pair
+              {locale==="en"?"Add Subject-Class Pair":"اضافة رابط مادة-فصل"}
             </button>
           </div>
           
@@ -257,15 +261,15 @@ const TeacherCreation = () => {
 
         {/* Show Assigned Subject-Class Pairs */}
         <div className="mt-4">
-          <h2 className="text-lg font-medium text-gray-700">Subject-Class Assignments:</h2>
+          <h2 className="text-lg font-medium text-gray-700">{t('Subject Class Assignments')} :</h2>
           {teacherData.subjectClassAssignments.map((pair, index) => (
             <p key={index} className="text-gray-600">
-              Subject ID: {pair.subjectId} - Class ID: {pair.classId}
+              {t('Subject ID')}: {pair.subjectId} - {t('Class ID')}: {pair.classId}
             </p>
           ))}
         </div>
         <div>
-        <label className="block text-lg font-medium text-gray-700">Signature:</label>
+        <label className="block text-lg font-medium text-gray-700">{locale==="en"?"Signature :":"توقيع المعلم :"}</label>
         <SignatureCanvas
           ref={signatureRef}
           penColor="black"
@@ -273,20 +277,20 @@ const TeacherCreation = () => {
             className: 'border border-gray-300 rounded-md w-full h-40',
           }}
         />
-        <div className="mt-2 flex gap-4">
+        <div className={`mt-2 flex gap-4 items-center justify-end`}>
           <button
             type="button"
             onClick={handleSaveSignature}
             className="p-3 bg-blue-500 text-white rounded-md"
           >
-            Save Signature
+            {locale==="en"?"Save Signature":"حفظ التوقيع"}
           </button>
           <button
             type="button"
             onClick={handleClearSignature}
             className="p-3 bg-red-500 text-white rounded-md"
           >
-            Clear
+            {locale==="en"?"Clear Signature":"حذف التوقيع"}
           </button>
         </div>
       </div>
@@ -294,7 +298,7 @@ const TeacherCreation = () => {
           type="submit"
           className="mt-4 w-full py-3 px-6 bg-main text-white font-semibold rounded-md shadow-lg"
         >
-          Create Teacher
+        {locale==="en"?"Create Teacher":"تسجيل المعلم"}
         </button>
       </form>
     </div>

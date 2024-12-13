@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface ClassOption {
   id: string;
@@ -87,186 +88,186 @@ const AddStudentForm: React.FC = () => {
       toast.error('Error adding student. Please try again.');
     }
   };
-
+const t= useTranslations("createNewStudent");
   return (
     <div className="w-full md:w-[70%] mx-auto mt-24 p-6 bg-white shadow rounded">
-      <h2 className="text-2xl font-bold mb-6">Add New Student</h2>
-      <form onSubmit={handleSubmit} className="flex gap-8 flex-wrap w-full">
-        {/* Existing Fields */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="name" className="block text-sm font-medium mb-1">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-            required
-          />
-        </div>
-
-        <div className="mb-4 flex items-center justify-between gap-4">
-          <label htmlFor="arabicName" className="block text-sm font-medium min-w-fit ">
-            Arabic Name
-          </label>
-          <input
-            type="text"
-            id="arabicName"
-            value={arabicName}
-            onChange={(e) => setArabicName(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-          />
-        </div>
-
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="dob" className="block text-sm font-medium mb-1 min-w-fit">
-            Date of Birth
-          </label>
-          <input
-            type="date"
-            id="dob"
-            value={dob}
-            onChange={(e) => setDob(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-            required
-          />
-        </div>
-
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="nationality" className="block text-sm font-medium mb-1">
-            Nationality
-          </label>
-          <input
-            type="text"
-            id="nationality"
-            value={nationality}
-            onChange={(e) => setNationality(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-          />
-        </div>
-
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="iqamaNo" className="block text-sm font-medium mb-1 min-w-fit">
-            Iqama Number
-          </label>
-          <input
-            type="text"
-            id="iqamaNo"
-            value={iqamaNo}
-            onChange={(e) => setIqamaNo(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-            required
-          />
-        </div>
-
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="passportNo" className="block text-sm font-medium mb-1 min-w-fit">
-            Passport Number
-          </label>
-          <input
-            type="text"
-            id="passportNo"
-            value={passportNo}
-            onChange={(e) => setPassportNo(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-          />
-        </div>
-
-        {/* School Select Box */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="school" className="block text-sm font-medium mb-1">
-            School
-          </label>
-          <select
-            id="school"
-            value={school}
-            onChange={(e) => setSchool(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-            required
-          >
-            <option value="" disabled>Select a school</option>
-            <option value="Alforqan School">Alforqan School</option>
-            <option value="Albatool Khaldia 1">Albatool Khaldia 1</option>
-            <option value="Albatool Khaldia 2">Albatool Khaldia 2</option>
-            <option value="Albatool Khaldia 3">Albatool Khaldia 3</option>
-          </select>
-        </div>
-
-        {/* Class Select Box */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="classId" className="block text-sm font-medium mb-1">
-            Class
-          </label>
-          <select
-            id="classId"
-            value={classId}
-            onChange={(e) => setClassId(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-            required
-          >
-            <option value="" disabled>Select a class</option>
-            {classes.map((classOption) => (
-              <option key={classOption.id} value={classOption.id}>
-                {classOption.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Expenses Dropdown */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="expenses" className="block text-sm font-medium mb-1">
-            Expenses
-          </label>
-          <select
-            id="expenses"
-            value={expenses}
-            onChange={(e) => setExpenses(e.target.value)}
-            className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
-          >
-            <option value="paid">Paid</option>
-            <option value="unpaid">Unpaid</option>
-          </select>
-        </div>
-
-        {/* Username */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="username" className="block text-sm font-medium mb-1">
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            value={username}
-            readOnly
-            className="w-full border p-2 bg-gray-200 rounded focus:ring focus:ring-main focus:outline-none"
-          />
-        </div>
-
-        {/* Password */}
-        <div className="mb-4 flex items-center gap-4">
-          <label htmlFor="password" className="block text-sm font-medium mb-1">
-            Password
-          </label>
-          <input
-            type="text"
-            id="password"
-            value={password}
-            readOnly
-            className="w-full border p-2 bg-gray-200 rounded focus:ring focus:ring-main focus:outline-none"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-main text-white p-2 rounded font-semibold hover:bg-main-dark transition"
+    <h2 className="text-2xl font-bold mb-6">{t('addNewStudent')}</h2>
+    <form onSubmit={handleSubmit} className="flex gap-8 flex-wrap w-full">
+      {/* Existing Fields */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="name" className="block text-sm font-medium mb-1">
+          {t('name')}
+        </label>
+        <input
+          type="text"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+          required
+        />
+      </div>
+  
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <label htmlFor="arabicName" className="block text-sm font-medium min-w-fit ">
+          {t('arabicName')}
+        </label>
+        <input
+          type="text"
+          id="arabicName"
+          value={arabicName}
+          onChange={(e) => setArabicName(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+        />
+      </div>
+  
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="dob" className="block text-sm font-medium mb-1 min-w-fit">
+          {t('dateOfBirth')}
+        </label>
+        <input
+          type="date"
+          id="dob"
+          value={dob}
+          onChange={(e) => setDob(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+          required
+        />
+      </div>
+  
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="nationality" className="block text-sm font-medium mb-1">
+          {t('nationality')}
+        </label>
+        <input
+          type="text"
+          id="nationality"
+          value={nationality}
+          onChange={(e) => setNationality(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+        />
+      </div>
+  
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="iqamaNo" className="block text-sm font-medium mb-1 min-w-fit">
+          {t('iqamaNo')}
+        </label>
+        <input
+          type="text"
+          id="iqamaNo"
+          value={iqamaNo}
+          onChange={(e) => setIqamaNo(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+          required
+        />
+      </div>
+  
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="passportNo" className="block text-sm font-medium mb-1 min-w-fit">
+          {t('passportNo')}
+        </label>
+        <input
+          type="text"
+          id="passportNo"
+          value={passportNo}
+          onChange={(e) => setPassportNo(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+        />
+      </div>
+  
+      {/* School Select Box */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="school" className="block text-sm font-medium mb-1">
+          {t('school')}
+        </label>
+        <select
+          id="school"
+          value={school}
+          onChange={(e) => setSchool(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+          required
         >
-          Add Student
-        </button>
-      </form>
-    </div>
+          <option value="" disabled>{t('selectSchool')}</option>
+          <option value="Alforqan School">Alforqan School</option>
+          <option value="Albatool Khaldia 1">Albatool Khaldia 1</option>
+          <option value="Albatool Khaldia 2">Albatool Khaldia 2</option>
+          <option value="Albatool Khaldia 3">Albatool Khaldia 3</option>
+        </select>
+      </div>
+  
+      {/* Class Select Box */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="classId" className="block text-sm font-medium mb-1">
+          {t('class')}
+        </label>
+        <select
+          id="classId"
+          value={classId}
+          onChange={(e) => setClassId(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+          required
+        >
+          <option value="" disabled>{t('selectClass')}</option>
+          {classes.map((classOption) => (
+            <option key={classOption.id} value={classOption.id}>
+              {classOption.name}
+            </option>
+          ))}
+        </select>
+      </div>
+  
+      {/* Expenses Dropdown */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="expenses" className="block text-sm font-medium mb-1">
+          {t('expenses')}
+        </label>
+        <select
+          id="expenses"
+          value={expenses}
+          onChange={(e) => setExpenses(e.target.value)}
+          className="w-full border p-2 rounded focus:ring focus:ring-main focus:outline-none"
+        >
+          <option value="paid">{t('paid')}</option>
+          <option value="unpaid">{t('unpaid')}</option>
+        </select>
+      </div>
+  
+      {/* Username */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="username" className="block text-sm font-medium mb-1">
+          {t('username')}
+        </label>
+        <input
+          type="text"
+          id="username"
+          value={username}
+          readOnly
+          className="w-full border p-2 bg-gray-200 rounded focus:ring focus:ring-main focus:outline-none"
+        />
+      </div>
+  
+      {/* Password */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="password" className="block text-sm font-medium mb-1">
+          {t('password')}
+        </label>
+        <input
+          type="text"
+          id="password"
+          value={password}
+          readOnly
+          className="w-full border p-2 bg-gray-200 rounded focus:ring focus:ring-main focus:outline-none"
+        />
+      </div>
+  
+      <button
+        type="submit"
+        className="w-full bg-main text-white p-2 rounded font-semibold hover:bg-main-dark transition"
+      >
+        {t('addStudent')}
+      </button>
+    </form>
+  </div>
   );
 };
 

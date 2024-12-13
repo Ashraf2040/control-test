@@ -20,7 +20,7 @@ const LanguageSwitcher = () => {
   return (
     <motion.button
       onClick={() => switchLanguage(locale === "en" ? "ar" : "en")}
-      className={`flex items-center p-1 rounded-full border text-white shadow-md transition-all focus:outline-none ${headerBackground} focus:ring-2`}
+      className={`flex items-center p-1 justify-center rounded-full border text-white shadow-md transition-all w-8 h-8 focus:outline-none ${headerBackground} focus:ring-2`}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
     >

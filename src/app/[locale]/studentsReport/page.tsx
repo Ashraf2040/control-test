@@ -76,7 +76,7 @@ console.log(classes);
   };
 
   return (
-    <div className="p-6 my-24">
+    <div className="p-6 mt-10">
       <Toaster position="top-right" />
       <h1 className="text-2xl font-semibold mb-6 text-center text-main">Students Reports</h1>
 

@@ -43,7 +43,7 @@ const Header = ({ locale }: { locale: string }) => {
 
   return (
     <header
-      className={` w-[98%] rounded-lg h-[70px] px-4 md:px-8 lg:px-12 flex justify-between mt-2 items-center print:hidden ${headerBackground} absolute z-10 top-0zz`}
+      className={` w-[98%] rounded-lg h-[40px] px-4 md:px-8 lg:px-12 flex justify-between mt-2 items-center print:hidden ${headerBackground} absolute z-10 top-2 zz`}
     >
       <Link
         href="/"

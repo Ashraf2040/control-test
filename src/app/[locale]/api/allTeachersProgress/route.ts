@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 // Modify to accept query parameters (e.g. trimester)
 export async function GET(request: Request) {
+
   try {
     // Extract the trimester from the query parameters
     const url = new URL(request.url);
@@ -17,10 +18,15 @@ export async function GET(request: Request) {
       where: {
         role: 'TEACHER', // Ensure you're fetching only teachers
       },
+      
       include: {
+        
         subjects: {
+          
           include: {
-            subject: true, // Include the actual subject name
+            subject: true,
+            
+          // Include the actual subject name
           },
         },
         classes: {
@@ -78,6 +84,7 @@ export async function GET(request: Request) {
       return {
         teacherId: teacher.id, // Teacher ID
         name: teacher.name, // Teacher name
+        arabicName: teacher.arabicName, // Teacher Arabic name
         academicYear: teacher.academicYear, // Teacher's academic year
         email: teacher.email, // Teacher's email (or any other detail you want)
         role: teacher.role, // Teacher's role (in case needed)

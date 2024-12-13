@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -108,99 +109,100 @@ export default function CSVUpload() {
       setLoading(false);
     }
   };
-
+  const  t  = useTranslations("bulkUpload");
   return (
     <div className="p-6 my-24">
-      <h1 className="text-2xl font-semibold mb-6 text-center text-main">Bulk Students Upload</h1>
+  <h1 className="text-2xl font-semibold mb-6 text-center text-main">{t('bulkStudentsUpload')}</h1>
 
-      {/* File Upload Section */}
-      <div className="mb-6 ">
-        <label className="block text-lg font-medium text-main mb-4">Upload CSV File</label>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileChange}
-          className="w-full md:max-w-fit text-main border p-3 rounded-md"
-        />
-        <a
-          href="/Students_File.csv"
-          download="Students_File.csv"
-          className="text-blue-500 underline ml-2"
-        >
-          Download Sample File
-        </a>
-      </div>
+  {/* File Upload Section */}
+  <div className="mb-6">
+    <label className="block text-lg font-medium text-main mb-4">{t('uploadCSVFile')}</label>
+    <input
+      type="file"
+      accept=".csv"
+      onChange={handleFileChange}
+      className="w-full md:max-w-fit text-main border p-3 rounded-md"
+    />
+    <a
+      href="/Students_File.csv"
+      download="Students_File.csv"
+      className="text-blue-500 underline ml-2"
+    >
+      {t('downloadSampleFile')}
+    </a>
+  </div>
 
-      {/* Validation and Upload Buttons */}
-      <div className="mb-6 text-center font-semibold flex justify-center gap-5">
-        <button
-          onClick={validateCSV}
-          disabled={loading}
-          className={`px-6 py-3 bg-main text-white rounded-md ${loading ? "cursor-wait opacity-50" : ""}`}
-        >
-          {loading ? "Validating..." : "Validate CSV"}
-        </button>
-        <button
-          onClick={uploadCSV}
-          disabled={loading || students.length === 0}
-          className={`px-6 py-3 bg-red-900 text-white rounded-md ${loading ? "cursor-wait opacity-50" : ""}`}
-        >
-          {loading ? "Uploading..." : "Import CSV"}
-        </button>
-      </div>
+  {/* Validation and Upload Buttons */}
+  <div className="mb-6 text-center font-semibold flex justify-center gap-5">
+    <button
+      onClick={validateCSV}
+      disabled={loading}
+      className={`px-6 py-3 bg-main text-white rounded-md ${loading ? "cursor-wait opacity-50" : ""}`}
+    >
+      {loading ? t('validating') : t('validateCSV')}
+    </button>
+    <button
+      onClick={uploadCSV}
+      disabled={loading || students.length === 0}
+      className={`px-6 py-3 bg-red-900 text-white rounded-md ${loading ? "cursor-wait opacity-50" : ""}`}
+    >
+      {loading ? t('uploading') : t('importCSV')}
+    </button>
+  </div>
 
-      {/* Validation Errors */}
-      {validationErrors.length > 0 && (
-        <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">
-          <h3 className="font-semibold mb-2">Validation Errors:</h3>
-          <ul className="list-disc pl-6">
-            {validationErrors.map((error, index) => (
-              <li key={index}>{error}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Validated Data */}
-      {students.length > 0 && !loading && (
-        <div>
-          <h3 className="text-xl font-semibold mb-4">Validated Students</h3>
-          <table className="min-w-full table-auto border-collapse border border-gray-300">
-            <thead className="bg-gray-200 text-sm">
-              <tr>
-                <th className="border px-4 py-2">Name</th>
-                <th className="border px-4 py-2">Arabic Name</th>
-                <th className="border px-4 py-2">DOB</th>
-                <th className="border px-4 py-2">School</th>
-                <th className="border px-4 py-2">Class</th>
-                <th className="border px-4 py-2">Nationality</th>
-                <th className="border px-4 py-2">Iqama No</th>
-                <th className="border px-4 py-2">Passport No</th>
-                <th className="border px-4 py-2">Expenses</th>
-                <th className="border px-4 py-2">Username</th>
-                <th className="border px-4 py-2">Password</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((student, index) => (
-                <tr key={index} className="even:bg-gray-50 hover:bg-gray-100 transition duration-300">
-                  <td className="border px-4 py-2">{student.name}</td>
-                  <td className="border px-4 py-2">{student.arabicName}</td>
-                  <td className="border px-4 py-2">{student.dob}</td>
-                  <td className="border px-4 py-2">{student.school}</td>
-                  <td className="border px-4 py-2">{student.classId}</td>
-                  <td className="border px-4 py-2">{student.nationality}</td>
-                  <td className="border px-4 py-2">{student.iqamaNo}</td>
-                  <td className="border px-4 py-2">{student.passportNo}</td>
-                  <td className="border px-4 py-2">{student.expenses}</td>
-                  <td className="border px-4 py-2">{student.username}</td>
-                  <td className="border px-4 py-2">{student.password}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+  {/* Validation Errors */}
+  {validationErrors.length > 0 && (
+    <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">
+      <h3 className="font-semibold mb-2">{t('validationErrors')}:</h3>
+      <ul className="list-disc pl-6">
+        {validationErrors.map((error, index) => (
+          <li key={index}>{error}</li>
+        ))}
+      </ul>
     </div>
+  )}
+
+  {/* Validated Data */}
+  {students.length > 0 && !loading && (
+    <div>
+      <h3 className="text-xl font-semibold mb-4">{t('validatedStudents')}</h3>
+      <table className="min-w-full table-auto border-collapse border border-gray-300">
+        <thead className="bg-gray-200 text-sm">
+          <tr>
+            <th className="border px-4 py-2">{t('name')}</th>
+            <th className="border px-4 py-2">{t('arabicName')}</th>
+            <th className="border px-4 py-2">{t('dob')}</th>
+            <th className="border px-4 py-2">{t('school')}</th>
+            <th className="border px-4 py-2">{t('class')}</th>
+            <th className="border px-4 py-2">{t('nationality')}</th>
+            <th className="border px-4 py-2">{t('iqamaNo')}</th>
+            <th className="border px-4 py-2">{t('passportNo')}</th>
+            <th className="border px-4 py-2">{t('expenses')}</th>
+            <th className="border px-4 py-2">{t('username')}</th>
+            <th className="border px-4 py-2">{t('password')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {students.map((student, index) => (
+            <tr key={index} className="even:bg-gray-50 hover:bg-gray-100 transition duration-300">
+              <td className="border px-4 py-2">{student.name}</td>
+              <td className="border px-4 py-2">{student.arabicName}</td>
+              <td className="border px-4 py-2">{student.dob}</td>
+              <td className="border px-4 py-2">{student.school}</td>
+              <td className="border px-4 py-2">{student.classId}</td>
+              <td className="border px-4 py-2">{student.nationality}</td>
+              <td className="border px-4 py-2">{student.iqamaNo}</td>
+              <td className="border px-4 py-2">{student.passportNo}</td>
+              <td className="border px-4 py-2">{student.expenses}</td>
+              <td className="border px-4 py-2">{student.username}</td>
+              <td className="border px-4 py-2">{student.password}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+
   );
 }
